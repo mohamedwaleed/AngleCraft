@@ -20,6 +20,11 @@ import {
   Lightbulb,
   Megaphone,
   LineChart,
+  ShoppingBag,
+  Music,
+  Camera,
+  Film,
+  Globe,
 } from "lucide-react";
 
 /* ─────────────────────────────────────────────────────────────────────
@@ -105,7 +110,7 @@ function HeroPanelAdCard({
   return (
     <div className="group relative rounded-2xl border border-[#E2E8F0] overflow-hidden shadow-lg bg-white">
       {/* Full photo background */}
-      <div className="relative h-[170px] w-full overflow-hidden">
+      <div className="relative h-[150px] sm:h-[170px] w-full overflow-hidden">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={photoSrc}
@@ -220,9 +225,9 @@ function ExampleAdCard({
   /* ── UGC-style photo ad: raw, slightly imperfect, phone-like ── */
   if (photoSrc && ugc) {
     return (
-      <div className="group relative rounded-2xl border border-[#E2E8F0] overflow-hidden shadow-lg transition-all hover:shadow-xl hover:-translate-y-0.5 bg-white flex flex-col" style={{ transform: "rotate(-1.2deg)" }}>
+      <div className="group relative rounded-2xl border border-[#E2E8F0] overflow-hidden shadow-lg transition-all hover:shadow-xl hover:-translate-y-0.5 bg-white flex flex-col [transform:rotate(0deg)] sm:[transform:rotate(-1.2deg)]">
         {/* Image area — taller, phone-like */}
-        <div className="relative h-64 w-full overflow-hidden">
+        <div className="relative h-52 sm:h-64 w-full overflow-hidden">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={photoSrc}
@@ -274,7 +279,7 @@ function ExampleAdCard({
     return (
       <div className="group relative rounded-2xl border border-[#E2E8F0] overflow-hidden shadow-lg transition-all hover:shadow-xl hover:-translate-y-0.5 bg-white flex flex-col">
         {/* Image area */}
-        <div className="relative h-56 w-full overflow-hidden">
+        <div className="relative h-48 sm:h-56 w-full overflow-hidden">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={photoSrc}
@@ -375,7 +380,7 @@ export default function Home() {
           NAV
       ══════════════════════════════════════════════════ */}
       <header className="sticky top-0 z-50 border-b border-[#E2E8F0] bg-white/80 backdrop-blur-md">
-        <div className="mx-auto max-w-6xl px-6 flex h-16 items-center justify-between">
+        <div className="mx-auto max-w-6xl px-5 sm:px-6 flex h-16 items-center justify-between">
           <span className="text-[17px] font-bold tracking-tight" style={H}>
             Angle<span className="text-indigo-500">Craft</span>
           </span>
@@ -390,7 +395,7 @@ export default function Home() {
             asChild
           >
             <a href="#generate">
-              <span className="hidden sm:inline">Get My Ad Strategy (Free Preview)</span>
+              <span className="hidden sm:inline">Get My Free Ad Strategy</span>
               <span className="sm:hidden">Start Free</span>
             </a>
           </Button>
@@ -403,7 +408,7 @@ export default function Home() {
             HERO
         ══════════════════════════════════════════════════ */}
         <section
-          className="relative overflow-hidden pt-12 sm:pt-16 lg:pt-20 pb-16 sm:pb-24"
+          className="relative overflow-hidden pt-10 sm:pt-16 lg:pt-20 pb-12 sm:pb-24"
           style={{ background: "linear-gradient(160deg, #fafafe 0%, #f5f3ff 40%, #eef2ff 100%)" }}
         >
           {/* Radial glow */}
@@ -418,45 +423,45 @@ export default function Home() {
             }}
           />
 
-          <div className="relative mx-auto max-w-6xl px-6 grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+          <div className="relative mx-auto max-w-6xl px-5 sm:px-6 grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
 
             {/* ── Left ── */}
             <div className="flex flex-col items-start">
-              <div className="inline-flex items-center gap-2 rounded-full border border-indigo-200 bg-white px-3.5 py-1.5 text-xs font-semibold text-indigo-600 shadow-sm mb-7">
+              <div className="inline-flex items-center gap-2 rounded-full border border-indigo-200 bg-white px-3 sm:px-3.5 py-1.5 text-[11px] sm:text-xs font-semibold text-indigo-600 shadow-sm mb-5 sm:mb-7">
                 <Sparkles className="size-3.5" />
-                AI-Powered Ad Strategy
+                AI Creative Strategy for E-commerce Ads
               </div>
 
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.08] sm:leading-[1.04] mb-6" style={H}>
-                Turn Any Product Into a{" "}
+              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.12] sm:leading-[1.04] mb-5" style={H}>
+                Stop Guessing Which{" "}
                 <span
                   className="text-transparent bg-clip-text"
                   style={{ backgroundImage: "linear-gradient(135deg, #6366F1 0%, #8B5CF6 55%, #A855F7 100%)" }}
                 >
-                  Winning Ad Testing Plan
-                </span>{" "}
-                — in Seconds
+                  Ads To Create
+                </span>
               </h1>
 
-              <p className="text-base sm:text-lg text-[#64748B] leading-relaxed mb-3 max-w-lg">
-                Generate ad angles, hooks, and a clear testing plan — then turn them into ready-to-use ads.
+              <p className="text-sm sm:text-lg text-[#64748B] leading-relaxed mb-3 max-w-lg">
+                Generate your product's ad angles, hooks, and ready-to-test creatives before spending money
               </p>
-              <p className="text-sm text-indigo-500 font-semibold mb-8 max-w-lg">
+              <p className="text-xs sm:text-sm text-indigo-500 font-semibold mb-6 max-w-lg">
                 Plan your next ad testing sprint — instantly.
               </p>
 
               {/* CTA */}
-              <div className="mb-5">
+              <div className="mb-5 flex flex-col items-center">
                 <Button
                   size="lg"
                   className="gap-2 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white px-6 sm:px-8 py-3.5 sm:py-4 h-auto text-sm sm:text-base font-semibold shadow-lg shadow-indigo-200 transition-all hover:shadow-xl hover:shadow-indigo-300 hover:-translate-y-0.5 active:translate-y-0 w-full sm:w-auto"
                   asChild
                 >
                   <a href="#generate">
-                    Get My Ad Strategy (Free Preview)
+                    Get My Free Ad Strategy
                     <ArrowRight className="size-4" />
                   </a>
                 </Button>
+                <p className="mt-2.5 text-xs text-[#94A3B8]">No credit card required</p>
               </div>
 
               {/* Micro-proof — free vs paid */}
@@ -474,10 +479,12 @@ export default function Home() {
                   </span>
                 </div>
               </div>
+
+
             </div>
 
             {/* ── Right: product output panel ── */}
-            <div className="relative mt-8 lg:mt-0">
+            <div className="relative mt-6 lg:mt-0">
               {/* Rotated backdrop — hidden on mobile to avoid overflow */}
               <div
                 aria-hidden
@@ -489,56 +496,94 @@ export default function Home() {
                 }}
               />
 
-              <div className="relative rounded-2xl border border-[#E2E8F0] bg-white shadow-xl p-4 flex flex-col gap-3">
+              <div className="relative rounded-2xl border border-[#E2E8F0] bg-white shadow-xl p-4 sm:p-5 flex flex-col gap-3 sm:gap-4">
                 {/* Panel header */}
                 <div className="flex items-center justify-between pb-2 border-b border-[#F1F5F9]">
                   <div className="flex items-center gap-2">
                     <div className="size-2 rounded-full bg-indigo-500" />
                     <span className="text-xs font-bold text-[#0F172A]" style={H}>Results for your product</span>
                   </div>
-                  <span className="inline-flex items-center gap-1 rounded-full bg-indigo-50 border border-indigo-200 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-indigo-600">
-                    Preview
-                  </span>
                 </div>
 
-                {/* Free section: small, top */}
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-[#94A3B8] mb-2">Ad Angles &amp; Hooks — Free</p>
-                  <div className="flex flex-col gap-2">
-                    <HeroPanelAngleCard icon={Clock} label="Time Saving" hook="Smoothies in 30 seconds — no mess" />
-                    <HeroPanelAngleCard icon={TrendingUp} label="Convenience" hook="Blend anywhere, even at the office" />
+                {/* Free section */}
+                <div className="rounded-xl border border-emerald-200 bg-emerald-50/40 p-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <CheckCircle className="size-4 text-emerald-500" />
+                    <span className="text-xs font-bold text-emerald-700 uppercase tracking-wide">Free Preview</span>
                   </div>
+                  <ul className="flex flex-col gap-2">
+                    {["5 Ad Angles", "5 Hooks", "Buyer Insights"].map((item) => (
+                      <li key={item} className="flex items-center gap-2 text-sm text-[#0F172A]">
+                        <CheckCircle className="size-3.5 text-emerald-500 shrink-0" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
 
-                {/* Paid divider */}
-                <div className="flex items-center gap-2 pt-1">
-                  <div className="flex-1 border-t border-dashed border-[#E2E8F0]" />
-                  <span className="flex items-center gap-1 text-[10px] font-bold text-indigo-500 uppercase tracking-wide">
-                    <Lock className="size-2.5" /> Unlock ad testing sprint
-                  </span>
-                  <div className="flex-1 border-t border-dashed border-[#E2E8F0]" />
-                </div>
+                {/* Locked section */}
+                <div className="relative rounded-xl border border-indigo-200 bg-indigo-50/30 p-4 overflow-hidden">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Lock className="size-4 text-indigo-500" />
+                    <span className="text-xs font-bold text-indigo-700 uppercase tracking-wide">Full Campaign</span>
+                  </div>
+                  <ul className="flex flex-col gap-2 mb-4">
+                    <li className="flex flex-col gap-0.5 text-sm text-[#475569]">
+                      <span className="flex items-center gap-2">
+                        <CheckCircle className="size-3.5 text-indigo-400 shrink-0" />
+                        3 Ready-to-run Ad Creatives
+                      </span>
+                      <span className="text-xs text-[#94A3B8] pl-5.5">Image + Copy + CTA</span>
+                    </li>
+                    {["Ready-to-use ad copy", "3 creative concepts", "Testing roadmap"].map((item) => (
+                      <li key={item} className="flex items-center gap-2 text-sm text-[#475569]">
+                        <CheckCircle className="size-3.5 text-indigo-400 shrink-0" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
 
-                {/* Paid section: main focus, most visual weight */}
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-[#94A3B8] mb-2">Ad Creatives — Paid</p>
-                  <div className="flex flex-col gap-3">
-                    <HeroPanelAdCard
-                      angle="Time Saving"
-                      headline="Healthy smoothies in 30 seconds"
-                      subline="No mess. No effort. Just press."
-                      cta="Shop Now"
-                      accentColor="#6366F1"
-                      photoSrc="https://images.unsplash.com/photo-1633108787619-9455a0ca4522?w=600&q=80&auto=format&fit=crop"
-                    />
-                    <HeroPanelAdCard
-                      angle="Convenience"
-                      headline="Blend anywhere, anytime"
-                      subline="Take it to work, the gym, anywhere."
-                      cta="Get Yours"
-                      accentColor="#7C3AED"
-                      photoSrc="https://images.unsplash.com/photo-1761953881694-b98b238f87bb?w=600&q=80&auto=format&fit=crop"
-                    />
+                  {/* Small creative card preview */}
+                  <div className="relative rounded-lg border border-indigo-100 overflow-hidden">
+                    <div className="relative h-28 w-full overflow-hidden">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src="https://images.unsplash.com/photo-1536304447766-da0ed4ce1b73?w=600&q=80&auto=format&fit=crop"
+                        alt="Ad creative preview"
+                        className="absolute inset-0 w-full h-full object-cover object-center"
+                      />
+                      <div
+                        className="absolute inset-0"
+                        style={{
+                          background:
+                            "linear-gradient(to top, rgba(2,6,23,0.88) 0%, rgba(2,6,23,0.40) 50%, rgba(2,6,23,0.08) 100%)",
+                        }}
+                      />
+                      <span className="absolute top-2 left-2 rounded bg-indigo-500 px-1.5 py-0.5 text-[9px] font-bold text-white">
+                        Health &amp; Wellness
+                      </span>
+                      <p className="absolute bottom-2 left-2 right-2 text-sm font-black text-white leading-tight drop-shadow">
+                        Fresh smoothies in seconds
+                      </p>
+                    </div>
+                    {/* Format badges */}
+                    <div className="flex items-center gap-1.5 px-2 py-1.5 bg-white border-t border-indigo-100">
+                      <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[8px] font-semibold text-[#64748B]">Facebook Feed</span>
+                      <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[8px] font-semibold text-[#64748B]">Image Ad</span>
+                    </div>
+                  </div>
+
+                  {/* Unlock CTA */}
+                  <div className="mt-4">
+                    <Button
+                      size="sm"
+                      className="gap-1.5 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white px-4 shadow-sm w-full"
+                      asChild
+                    >
+                      <a href="#generate">
+                        Unlock <ArrowRight className="size-3.5" />
+                      </a>
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -547,14 +592,29 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Trusted by */}
-          <div className="relative mx-auto max-w-xl px-6 mt-16 text-center">
-            <p className="text-[11px] font-semibold uppercase tracking-widest text-[#94A3B8] mb-4">
-              Trusted by e-commerce marketers testing faster on
+          {/* Differentiation line */}
+          <div className="relative mx-auto max-w-2xl px-5 sm:px-6 mt-10 sm:mt-12 text-center">
+            <p className="text-sm sm:text-lg font-semibold text-[#0F172A] leading-relaxed">
+              Most AI tools create images.{" "}
+              <span className="text-indigo-500">AngleCraft tells you what ads to create — then generates them.</span>
             </p>
-            <div className="flex flex-wrap gap-6 justify-center items-center">
-              {["Shopify", "TikTok", "Meta", "Instagram"].map((p) => (
-                <span key={p} className="text-sm font-semibold text-[#CBD5E1]">{p}</span>
+          </div>
+
+          {/* Built for */}
+          <div className="relative mx-auto max-w-xl px-5 sm:px-6 mt-10 sm:mt-16 text-center">
+            <p className="text-sm font-semibold text-[#64748B] mb-4">
+              Built for
+            </p>
+            <div className="flex flex-wrap justify-center gap-3">
+              {[
+                "Shopify stores",
+                "Dropshippers",
+                "E-commerce marketers",
+              ].map((item) => (
+                <span key={item} className="inline-flex items-center gap-1.5 rounded-full border border-[#E2E8F0] bg-white px-3 py-1.5 text-sm font-medium text-[#475569] shadow-sm">
+                  <CheckCircle className="size-3.5 text-emerald-500" />
+                  {item}
+                </span>
               ))}
             </div>
           </div>
@@ -565,86 +625,51 @@ export default function Home() {
         {/* ══════════════════════════════════════════════════
             HOW IT WORKS — white
         ══════════════════════════════════════════════════ */}
-        <section id="how" className="py-24 sm:py-32 bg-white">
-          <div className="mx-auto max-w-5xl px-6">
-            <div className="text-center mb-16">
+        <section id="how" className="py-16 sm:py-32 bg-white">
+          <div className="mx-auto max-w-5xl px-5 sm:px-6">
+            <div className="text-center mb-10 sm:mb-16">
               <Eyebrow>How It Works</Eyebrow>
-              <h2 className="text-3xl sm:text-4xl font-bold text-[#0F172A]" style={H}>
-                From product to winning ads in 4 steps
+              <h2 className="text-2xl sm:text-4xl font-bold text-[#0F172A]" style={H}>
+                Three steps to test-ready ads
               </h2>
             </div>
 
-            <div className="flex flex-col gap-6">
-
-              {/* Free steps — 1, 2, 3 */}
-              <div className="grid sm:grid-cols-3 gap-5">
-                {/* Step 1 */}
-                <div className="relative flex flex-col gap-4 rounded-2xl border border-[#E2E8F0] bg-white p-6 shadow-sm transition-all hover:shadow-md hover:-translate-y-px">
-                  <span className="absolute top-4 right-5 text-5xl font-black select-none leading-none text-indigo-500/[0.06]">1</span>
-                  <div className="flex size-10 items-center justify-center rounded-xl bg-indigo-50">
-                    <Upload className="size-5 text-indigo-500" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-[#0F172A] mb-1" style={H}>Add Your Product</h3>
-                    <p className="text-sm text-[#64748B] leading-relaxed">Paste a URL or upload your product image</p>
-                  </div>
+            <div className="grid sm:grid-cols-3 gap-4 sm:gap-5">
+              {/* Step 1 */}
+              <div className="relative flex flex-col gap-3 sm:gap-4 rounded-2xl border border-[#E2E8F0] bg-white p-5 sm:p-6 shadow-sm transition-all hover:shadow-md hover:-translate-y-px">
+                <span className="absolute top-4 right-5 text-5xl font-black select-none leading-none text-indigo-500/[0.06]">1</span>
+                <div className="flex size-10 items-center justify-center rounded-xl bg-indigo-50">
+                  <Upload className="size-5 text-indigo-500" />
                 </div>
-
-                {/* Step 2 */}
-                <div className="relative flex flex-col gap-4 rounded-2xl border border-[#E2E8F0] bg-white p-6 shadow-sm transition-all hover:shadow-md hover:-translate-y-px">
-                  <span className="absolute top-4 right-5 text-5xl font-black select-none leading-none text-indigo-500/[0.06]">2</span>
-                  <div className="flex size-10 items-center justify-center rounded-xl bg-indigo-50">
-                    <Zap className="size-5 text-indigo-500" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-[#0F172A] mb-1" style={H}>Get Winning Angles</h3>
-                    <p className="text-sm text-[#64748B] leading-relaxed">AI generates high-converting angles and hooks for your product</p>
-                  </div>
-                </div>
-
-                {/* Step 3 */}
-                <div className="relative flex flex-col gap-4 rounded-2xl border border-[#E2E8F0] bg-white p-6 shadow-sm transition-all hover:shadow-md hover:-translate-y-px">
-                  <span className="absolute top-4 right-5 text-5xl font-black select-none leading-none text-indigo-500/[0.06]">3</span>
-                  <div className="flex size-10 items-center justify-center rounded-xl bg-indigo-50">
-                    <Target className="size-5 text-indigo-500" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-[#0F172A] mb-1" style={H}>Choose Concepts</h3>
-                    <p className="text-sm text-[#64748B] leading-relaxed">Pick the angles and hooks you want turned into real ads</p>
-                  </div>
+                <div>
+                  <h3 className="font-semibold text-[#0F172A] mb-1" style={H}>Upload your product</h3>
+                  <p className="text-sm text-[#64748B] leading-relaxed">Paste a URL or upload your product image</p>
                 </div>
               </div>
 
-              {/* Free / Paid boundary */}
-              <div className="relative flex items-center gap-2 sm:gap-4 py-2">
-                <div className="flex-1 border-t-2 border-dashed border-[#E2E8F0]" />
-                <div className="flex flex-col sm:flex-row items-center gap-1.5 sm:gap-3 shrink-0 rounded-full border-2 border-[#E2E8F0] bg-white px-3 sm:px-5 py-1.5 sm:py-2 shadow-md">
-                  <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 text-[11px] font-extrabold uppercase tracking-wide text-emerald-600">
-                    Free
-                  </span>
-                  <span className="hidden sm:inline text-xs font-bold text-[#CBD5E1]">above · below</span>
-                  <span className="sm:hidden text-[10px] font-bold text-[#CBD5E1]">↓</span>
-                  <span className="inline-flex items-center gap-1 rounded-full bg-indigo-50 border border-indigo-200 px-2.5 py-0.5 text-[11px] font-extrabold uppercase tracking-wide text-indigo-600">
-                    <Lock className="size-2.5" /> Paid
-                  </span>
+              {/* Step 2 */}
+              <div className="relative flex flex-col gap-3 sm:gap-4 rounded-2xl border border-[#E2E8F0] bg-white p-5 sm:p-6 shadow-sm transition-all hover:shadow-md hover:-translate-y-px">
+                <span className="absolute top-4 right-5 text-5xl font-black select-none leading-none text-indigo-500/[0.06]">2</span>
+                <div className="flex size-10 items-center justify-center rounded-xl bg-indigo-50">
+                  <Zap className="size-5 text-indigo-500" />
                 </div>
-                <div className="flex-1 border-t-2 border-dashed border-[#E2E8F0]" />
-              </div>
-
-              {/* Paid step — 4 only, centered */}
-              <div className="flex justify-center">
-                <div className="relative flex flex-col gap-4 rounded-2xl border border-indigo-100 bg-indigo-50/30 p-6 shadow-sm transition-all hover:shadow-md hover:-translate-y-px w-full sm:max-w-xs">
-                  <span className="absolute top-4 right-5 text-5xl font-black select-none leading-none text-indigo-500/[0.06]">4</span>
-                  <div className="flex size-10 items-center justify-center rounded-xl bg-white border border-indigo-100 shadow-sm">
-                    <Lock className="size-5 text-indigo-400" />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-[#0F172A] mb-1" style={H}>🔒 Launch Your Ad Testing Sprint</h3>
-                    <p className="text-sm text-[#64748B] leading-relaxed">Get your testing plan, creatives, and what to test first</p>
-                  </div>
+                <div>
+                  <h3 className="font-semibold text-[#0F172A] mb-1" style={H}>AI finds your best angles</h3>
+                  <p className="text-sm text-[#64748B] leading-relaxed">Get angles, hooks, and buyer insights instantly</p>
                 </div>
               </div>
 
+              {/* Step 3 */}
+              <div className="relative flex flex-col gap-3 sm:gap-4 rounded-2xl border border-[#E2E8F0] bg-white p-5 sm:p-6 shadow-sm transition-all hover:shadow-md hover:-translate-y-px">
+                <span className="absolute top-4 right-5 text-5xl font-black select-none leading-none text-indigo-500/[0.06]">3</span>
+                <div className="flex size-10 items-center justify-center rounded-xl bg-indigo-50">
+                  <ImageIcon className="size-5 text-indigo-500" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-[#0F172A] mb-1" style={H}>Generate ads ready for testing</h3>
+                  <p className="text-sm text-[#64748B] leading-relaxed">Get ad images, copy, and a testing plan — ready to launch</p>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -656,14 +681,14 @@ export default function Home() {
         ══════════════════════════════════════════════════ */}
         <section
           id="generate"
-          className="py-24 sm:py-32"
+          className="py-16 sm:py-32"
           style={{ background: "linear-gradient(160deg, #f5f3ff 0%, #eef2ff 100%)" }}
         >
-          <div className="mx-auto max-w-lg px-6">
-            <div className="rounded-2xl border border-[#E2E8F0] bg-white shadow-xl p-8 sm:p-10">
-              <div className="text-center mb-8">
+          <div className="mx-auto max-w-lg px-5 sm:px-6">
+            <div className="rounded-2xl border border-[#E2E8F0] bg-white shadow-xl p-6 sm:p-10">
+              <div className="text-center mb-6 sm:mb-8">
                 <Eyebrow>Free Preview</Eyebrow>
-                <h2 className="text-2xl sm:text-3xl font-bold text-[#0F172A] mb-2" style={H}>
+                <h2 className="text-xl sm:text-3xl font-bold text-[#0F172A] mb-2" style={H}>
                   Start Your Free Strategy Preview
                 </h2>
                 <p className="text-[#64748B]">
@@ -722,7 +747,7 @@ export default function Home() {
                   size="lg"
                   className="gap-2 h-12 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white text-base font-semibold shadow-md shadow-indigo-100 transition-all hover:shadow-lg hover:shadow-indigo-200 hover:-translate-y-0.5 active:translate-y-0"
                 >
-                  Get My Ad Strategy (Free Preview)
+                  Get My Free Ad Strategy
                   <ArrowRight className="size-4" />
                 </Button>
               </form>
@@ -735,50 +760,51 @@ export default function Home() {
         {/* ══════════════════════════════════════════════════
             WHAT YOU'LL GET — split free / paid — white
         ══════════════════════════════════════════════════ */}
-        <section id="preview" className="py-24 sm:py-32 bg-white">
-          <div className="mx-auto max-w-5xl px-6">
+        <section id="preview" className="py-16 sm:py-32 bg-white">
+          <div className="mx-auto max-w-5xl px-5 sm:px-6">
             <div className="text-center mb-4">
               <Eyebrow>What You&apos;ll Get</Eyebrow>
-              <h2 className="text-3xl sm:text-4xl font-bold text-[#0F172A]" style={H}>
+              <h2 className="text-2xl sm:text-4xl font-bold text-[#0F172A]" style={H}>
                 Get Ad Angles for Free.{" "}
                 <span className="text-indigo-500">Unlock Creatives When Ready.</span>
               </h2>
-              <p className="mt-3 text-base text-[#64748B] max-w-md mx-auto">
+              <p className="mt-3 text-sm sm:text-base text-[#64748B] max-w-md mx-auto">
                 Start with angles and hooks at no cost. Upgrade to get ready-to-use ad creatives.
               </p>
             </div>
 
-            <div className="mt-14 grid md:grid-cols-2 gap-6">
+            <div className="mt-10 sm:mt-14 grid md:grid-cols-2 gap-4 sm:gap-6">
 
               {/* FREE column */}
-              <div className="rounded-2xl border-2 border-emerald-200 bg-emerald-50/40 p-6 flex flex-col gap-4">
+              <div className="rounded-2xl border-2 border-emerald-200 bg-emerald-50/40 p-5 sm:p-6 flex flex-col gap-4">
                 <div className="flex items-center gap-3 mb-1">
                   <div className="flex size-9 items-center justify-center rounded-xl bg-white border border-emerald-200 shadow-sm">
                     <CheckCircle className="size-5 text-emerald-500" />
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <h3 className="text-base font-bold text-[#0F172A]" style={H}>Free Preview</h3>
+                      <h3 className="text-base font-bold text-[#0F172A]" style={H}>Strategy Preview</h3>
                       <FreeBadge />
                     </div>
                     <p className="text-xs text-[#64748B]">Instant, no signup</p>
                   </div>
                 </div>
-                <div className="flex flex-col gap-3">
-                  <p className="text-xs font-bold uppercase tracking-widest text-[#94A3B8]">Ad Angles</p>
-                  <AngleCard label="Convenience" hook="Blend anywhere, anytime" />
-                  <AngleCard label="Time Saving" hook="Smoothies in 30 seconds" />
-                  <AngleCard label="Cost Saving" hook="Stop overpaying for drinks" />
-
-                  <p className="text-xs font-bold uppercase tracking-widest text-[#94A3B8] mt-2">Hooks &amp; Copy</p>
-                  <HookCard text="Your smoothie goes wherever you go" />
-                  <HookCard text="Healthy made effortless" />
-                  <HookCard text="Save money. Drink better." />
-                </div>
+                <ul className="flex flex-col gap-3">
+                  {[
+                    "5 Ad Angles",
+                    "5 Hooks",
+                    "Buyer Insights",
+                  ].map((item) => (
+                    <li key={item} className="flex items-center gap-2.5 text-sm text-[#0F172A]">
+                      <CheckCircle className="size-4 text-emerald-500 shrink-0" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
               </div>
 
               {/* PAID column */}
-              <div className="rounded-2xl border-2 border-indigo-200 bg-indigo-50/30 p-6 flex flex-col gap-4 relative overflow-hidden">
+              <div className="relative rounded-2xl border-2 border-indigo-300 bg-indigo-50/30 p-5 sm:p-6 flex flex-col gap-4 overflow-hidden shadow-md">
                 {/* Top header */}
                 <div className="flex items-center gap-3 mb-1">
                   <div className="flex size-9 items-center justify-center rounded-xl bg-white border border-indigo-200 shadow-sm">
@@ -786,64 +812,44 @@ export default function Home() {
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <h3 className="text-base font-bold text-[#0F172A]" style={H}>Full Ad Pack</h3>
+                      <h3 className="text-base font-bold text-[#0F172A]" style={H}>Complete Ad Campaign</h3>
                       <PaidBadge />
                     </div>
                     <p className="text-xs text-[#64748B]">Unlock after free preview</p>
                   </div>
                 </div>
-
-                {/* Locked preview items */}
-                <div className="flex flex-col gap-3">
-                  <p className="text-xs font-bold uppercase tracking-widest text-[#94A3B8]">Ad Creatives (Images &amp; Video concepts)</p>
-
-                  {/* Two blurred ad creative mocks */}
+                <ul className="flex flex-col gap-3">
+                  <li className="flex flex-col gap-0.5 text-sm font-medium text-[#0F172A]">
+                    <span className="flex items-center gap-2.5">
+                      <CheckCircle className="size-4 text-indigo-500 shrink-0" />
+                      3 Ready-to-run Ad Creatives
+                    </span>
+                    <span className="text-xs text-[#94A3B8] pl-6">Image + Copy + CTA</span>
+                  </li>
                   {[
-                    { gradient: "linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%)", text: "Healthy smoothies in 30 seconds" },
-                    { gradient: "linear-gradient(135deg, #7C3AED 0%, #A855F7 100%)", text: "Blend anywhere, anytime" },
-                  ].map((ad, i) => (
-                    <div key={i} className="relative rounded-xl overflow-hidden border border-indigo-100">
-                      <div className="blur-sm select-none">
-                        <div className="h-16 flex items-end p-3" style={{ background: ad.gradient }}>
-                          <p className="text-sm font-bold text-white">{ad.text}</p>
-                        </div>
-                        <div className="bg-white px-3 py-2 flex items-center justify-between">
-                          <span className="text-xs text-[#94A3B8]">Ad creative</span>
-                          <span className="text-xs font-bold text-indigo-500">Shop Now →</span>
-                        </div>
-                      </div>
-                    </div>
+                    "Ready-to-use ad copy",
+                    "3 creative concepts",
+                    "Testing roadmap",
+                  ].map((item) => (
+                    <li key={item} className="flex items-center gap-2.5 text-sm font-medium text-[#0F172A]">
+                      <CheckCircle className="size-4 text-indigo-500 shrink-0" />
+                      {item}
+                    </li>
                   ))}
+                </ul>
 
-                  <p className="text-xs font-bold uppercase tracking-widest text-[#94A3B8] mt-1">Downloadable Ads</p>
-                  {[
-                    { icon: ImageIcon, text: "10+ image &amp; video concepts" },
-                    { icon: Download, text: "Ready to upload to TikTok &amp; Meta" },
-                  ].map(({ icon: Icon, text }, i) => (
-                    <div key={i} className="blur-sm select-none flex items-center gap-3 rounded-xl border border-[#E2E8F0] bg-white p-3.5">
-                      <div className="flex size-8 items-center justify-center rounded-lg bg-indigo-50">
-                        <Icon className="size-4 text-indigo-400" />
-                      </div>
-                      <p className="text-sm font-medium text-[#0F172A]" dangerouslySetInnerHTML={{ __html: text }} />
-                    </div>
-                  ))}
-                </div>
-
-                {/* Overlay CTA */}
-                <div className="mt-2 rounded-xl border border-indigo-200 bg-white/80 backdrop-blur-sm p-4 text-center shadow-sm">
-                  <p className="text-sm font-semibold text-[#0F172A] mb-3">
-                    Unlock to generate your ad creatives
-                  </p>
+                {/* CTA */}
+                <div className="mt-auto pt-2">
                   <Button
                     size="sm"
-                    className="gap-1.5 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white px-5 shadow-sm"
+                    className="gap-1.5 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white px-5 shadow-sm w-full"
                     asChild
                   >
                     <a href="#generate">
-                      Get My Ad Strategy (Free Preview) <ArrowRight className="size-3.5" />
+                      Get My Free Ad Strategy <ArrowRight className="size-3.5" />
                     </a>
                   </Button>
-                  <p className="mt-2 text-[10px] text-[#94A3B8]">Available after free preview</p>
+                  <p className="mt-2 text-[10px] text-[#94A3B8] text-center">Available after free preview</p>
                 </div>
               </div>
             </div>
@@ -855,28 +861,28 @@ export default function Home() {
         {/* ══════════════════════════════════════════════════
             STRATEGY — everything you need
         ══════════════════════════════════════════════════ */}
-        <section className="py-24 sm:py-32 bg-white">
-          <div className="mx-auto max-w-5xl px-6">
-            <div className="text-center mb-14">
+        <section className="py-16 sm:py-32 bg-white">
+          <div className="mx-auto max-w-5xl px-5 sm:px-6">
+            <div className="text-center mb-10 sm:mb-14">
               <Eyebrow>Strategy</Eyebrow>
-              <h2 className="text-3xl sm:text-4xl font-bold text-[#0F172A] mb-4" style={H}>
-                Everything You Need to Launch Winning Ads
+              <h2 className="text-2xl sm:text-4xl font-bold text-[#0F172A] mb-4" style={H}>
+                Everything You Need to Launch Test-Ready Ads
               </h2>
-              <p className="text-base text-[#64748B] max-w-xl mx-auto">
+              <p className="text-sm sm:text-base text-[#64748B] max-w-xl mx-auto">
                 We don&apos;t just generate ads — we help you decide what to test and why.
               </p>
             </div>
 
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
               {[
-                { icon: Target, title: "Winning ad angles based on psychology", desc: "We find the emotional triggers that make buyers stop scrolling." },
+                { icon: Target, title: "High-potential angles based on psychology", desc: "We find the emotional triggers that make buyers stop scrolling." },
                 { icon: Sparkles, title: "High-converting hooks & copy", desc: "Primary text, headlines, and openers that drive action." },
                 { icon: ImageIcon, title: "AI-generated ad creatives", desc: "Image and video concepts built around your best angles." },
                 { icon: Download, title: "Ready-to-use ad pack", desc: "Download everything, formatted for TikTok and Meta." },
                 { icon: LineChart, title: "Testing recommendations", desc: "Know which angles to test first and how to scale winners." },
                 { icon: Lightbulb, title: "Decision-making support", desc: "Get a clear strategy, not just a list of ideas." },
               ].map(({ icon: Icon, title, desc }) => (
-                <div key={title} className="flex flex-col gap-4 rounded-2xl border border-[#E2E8F0] bg-white p-6 shadow-sm transition-all hover:shadow-md hover:-translate-y-px">
+                <div key={title} className="flex flex-col gap-3 sm:gap-4 rounded-2xl border border-[#E2E8F0] bg-white p-5 sm:p-6 shadow-sm transition-all hover:shadow-md hover:-translate-y-px">
                   <div className="flex size-10 items-center justify-center rounded-xl bg-indigo-50">
                     <Icon className="size-5 text-indigo-500" />
                   </div>
@@ -889,7 +895,7 @@ export default function Home() {
             </div>
 
             {/* Strategy moment — what to test first */}
-            <div className="mt-10 rounded-2xl border border-indigo-200 bg-indigo-50/50 p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
+            <div className="mt-8 sm:mt-10 rounded-2xl border border-indigo-200 bg-indigo-50/50 p-5 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
               <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-indigo-500 shadow-md">
                 <LineChart className="size-6 text-white" />
               </div>
@@ -902,13 +908,13 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="mt-12 text-center">
+            <div className="mt-10 sm:mt-12 text-center">
               <Button
                 size="lg"
                 className="gap-2 h-12 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white px-6 sm:px-8 text-sm sm:text-base font-semibold shadow-md shadow-indigo-100 transition-all hover:shadow-lg hover:shadow-indigo-200 hover:-translate-y-0.5 active:translate-y-0 w-full sm:w-auto"
                 asChild
               >
-                <a href="#generate">Get My Ad Strategy (Free Preview) <ArrowRight className="size-4" /></a>
+                <a href="#generate">Get My Free Ad Strategy <ArrowRight className="size-4" /></a>
               </Button>
               <p className="mt-3 text-xs text-[#94A3B8]">Available after free preview</p>
             </div>
@@ -921,21 +927,21 @@ export default function Home() {
             EXAMPLE AD CREATIVES — light indigo bg
         ══════════════════════════════════════════════════ */}
         <section
-          className="py-24 sm:py-32"
+          className="py-16 sm:py-32"
           style={{ background: "linear-gradient(160deg, #f5f3ff 0%, #eef2ff 100%)" }}
         >
-          <div className="mx-auto max-w-5xl px-6">
-            <div className="text-center mb-14">
+          <div className="mx-auto max-w-5xl px-5 sm:px-6">
+            <div className="text-center mb-10 sm:mb-14">
               <Eyebrow>Example Creatives</Eyebrow>
-              <h2 className="text-3xl sm:text-4xl font-bold text-[#0F172A] mb-3" style={H}>
+              <h2 className="text-2xl sm:text-4xl font-bold text-[#0F172A] mb-3" style={H}>
                 Real Ads Generated by AngleCraft
               </h2>
-              <p className="text-base text-[#64748B] max-w-lg mx-auto">
+              <p className="text-sm sm:text-base text-[#64748B] max-w-lg mx-auto">
                 Different angles, different audiences — all ready to test on TikTok &amp; Meta.
               </p>
             </div>
 
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
               <ExampleAdCard
                 style="UGC"
                 angle="Convenience"
@@ -979,14 +985,14 @@ export default function Home() {
               />
             </div>
 
-            <div className="mt-10 text-center">
+            <div className="mt-8 sm:mt-10 text-center">
               <Button
                 size="lg"
                 className="gap-2 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white px-6 sm:px-8 py-3.5 sm:py-4 h-auto text-sm sm:text-base font-semibold shadow-lg shadow-indigo-200 transition-all hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 w-full sm:w-auto"
                 asChild
               >
                 <a href="#generate">
-                  Get My Ad Strategy (Free Preview)
+                  Get My Free Ad Strategy
                   <ArrowRight className="size-4" />
                 </a>
               </Button>
@@ -999,7 +1005,7 @@ export default function Home() {
         {/* ══════════════════════════════════════════════════
             STOP GUESSING — dark
         ══════════════════════════════════════════════════ */}
-        <section className="py-24 sm:py-32 bg-[#0F172A] relative overflow-hidden">
+        <section className="py-16 sm:py-32 bg-[#0F172A] relative overflow-hidden">
           <div
             aria-hidden
             className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2"
@@ -1008,24 +1014,24 @@ export default function Home() {
               background: "radial-gradient(ellipse at center, rgba(99,102,241,0.14) 0%, transparent 60%)",
             }}
           />
-          <div className="relative mx-auto max-w-3xl px-6 text-center">
-            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-5" style={H}>
+          <div className="relative mx-auto max-w-3xl px-5 sm:px-6 text-center">
+            <h2 className="text-2xl sm:text-4xl font-bold text-white mb-4 sm:mb-5" style={H}>
               Stop Guessing What Works
             </h2>
-            <p className="text-[#94A3B8] text-base sm:text-lg leading-relaxed mb-12 max-w-xl mx-auto">
+            <p className="text-[#94A3B8] text-sm sm:text-lg leading-relaxed mb-8 sm:mb-12 max-w-xl mx-auto">
               Most ads fail because of bad angles — not bad products. AngleCraft finds
               the angles that convert, then builds the creatives for you.
             </p>
-            <ul className="text-left max-w-sm mx-auto space-y-4 mb-12">
+            <ul className="text-left max-w-sm mx-auto space-y-3 sm:space-y-4 mb-8 sm:mb-12">
               {[
                 "Find proven angles in seconds — free",
                 "Generate scroll-stopping hooks instantly",
                 "Turn angles into real ad creatives",
                 "Skip hours of brainstorming and guesswork",
               ].map((item) => (
-                <li key={item} className="flex items-center gap-3.5">
+                <li key={item} className="flex items-center gap-3 sm:gap-3.5">
                   <CheckCircle className="size-5 text-indigo-400 shrink-0" />
-                  <span className="text-base text-[#CBD5E1]">{item}</span>
+                  <span className="text-sm sm:text-base text-[#CBD1E1]">{item}</span>
                 </li>
               ))}
             </ul>
@@ -1034,7 +1040,7 @@ export default function Home() {
               className="gap-2 h-12 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white px-6 sm:px-8 text-sm sm:text-base font-semibold shadow-lg shadow-indigo-900/40 transition-all hover:-translate-y-0.5 active:translate-y-0 w-full sm:w-auto"
               asChild
             >
-              <a href="#generate">Get My Ad Strategy (Free Preview) <ArrowRight className="size-4" /></a>
+              <a href="#generate">Get My Free Ad Strategy <ArrowRight className="size-4" /></a>
             </Button>
           </div>
         </section>
@@ -1044,22 +1050,22 @@ export default function Home() {
         ══════════════════════════════════════════════════ */}
         <section
           id="pricing"
-          className="py-24 sm:py-32"
+          className="py-16 sm:py-32"
           style={{ background: "linear-gradient(160deg, #f5f3ff 0%, #eef2ff 100%)" }}
         >
-          <div className="mx-auto max-w-2xl px-6 text-center">
+          <div className="mx-auto max-w-2xl px-5 sm:px-6 text-center">
             <Eyebrow>Full Ad Strategy Pack</Eyebrow>
-            <h2 className="text-3xl sm:text-4xl font-bold text-[#0F172A] mb-4" style={H}>
+            <h2 className="text-2xl sm:text-4xl font-bold text-[#0F172A] mb-4" style={H}>
               Unlock Your Ad Testing Sprint
             </h2>
-            <p className="text-[#64748B] text-base mb-10">
+            <p className="text-[#64748B] text-sm sm:text-base mb-8 sm:mb-10">
               Get your full testing plan, creatives, and recommendations — after your free preview.
             </p>
 
-            <div className="rounded-2xl border border-[#E2E8F0] bg-white p-8 text-left mb-8 shadow-md">
-              <ul className="space-y-4">
+            <div className="rounded-2xl border border-[#E2E8F0] bg-white p-5 sm:p-8 text-left mb-6 sm:mb-8 shadow-md">
+              <ul className="space-y-3 sm:space-y-4">
                 {[
-                  { icon: ImageIcon, text: "10+ ready-to-use ad creatives" },
+                  { icon: ImageIcon, text: "3 ready-to-use ad creatives" },
                   { icon: Target, text: "Multiple angles to test" },
                   { icon: Zap, text: "Hooks & primary text included" },
                   { icon: ShoppingCart, text: "Formats for TikTok & Meta" },
@@ -1069,7 +1075,7 @@ export default function Home() {
                     <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-indigo-50">
                       <Icon className="size-4 text-indigo-500" />
                     </div>
-                    <span className="text-base text-[#0F172A]">{text}</span>
+                    <span className="text-sm sm:text-base text-[#0F172A]">{text}</span>
                   </li>
                 ))}
               </ul>
@@ -1080,7 +1086,7 @@ export default function Home() {
               className="gap-2 h-12 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white px-6 sm:px-8 text-sm sm:text-base font-semibold shadow-md shadow-indigo-100 transition-all hover:shadow-lg hover:shadow-indigo-200 hover:-translate-y-0.5 active:translate-y-0 w-full sm:w-auto"
               asChild
             >
-              <a href="#generate">Get My Ad Strategy (Free Preview) <ArrowRight className="size-4" /></a>
+              <a href="#generate">Get My Free Ad Strategy <ArrowRight className="size-4" /></a>
             </Button>
             <p className="mt-3 text-xs text-[#94A3B8]">Available after free preview</p>
           </div>
@@ -1092,14 +1098,14 @@ export default function Home() {
             FINAL CTA
         ══════════════════════════════════════════════════ */}
         <section
-          className="py-24 sm:py-32"
+          className="py-16 sm:py-32"
           style={{ background: "linear-gradient(160deg, #fafafe 0%, #eef2ff 100%)" }}
         >
-          <div className="mx-auto max-w-2xl px-6 text-center">
-            <h2 className="text-3xl sm:text-4xl font-bold text-[#0F172A] mb-4" style={H}>
-              Ready to Find Your Winning Ads?
+          <div className="mx-auto max-w-2xl px-5 sm:px-6 text-center">
+            <h2 className="text-2xl sm:text-4xl font-bold text-[#0F172A] mb-4" style={H}>
+              Ready to Find Your High-Potential Ads?
             </h2>
-            <p className="text-[#64748B] mb-8 text-lg">
+            <p className="text-[#64748B] mb-6 sm:mb-8 text-sm sm:text-lg">
               Paste your product and get free ad angles in seconds.
             </p>
             <Button
@@ -1107,7 +1113,7 @@ export default function Home() {
               className="gap-2 h-12 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white px-6 sm:px-8 text-sm sm:text-base font-semibold shadow-md shadow-indigo-100 transition-all hover:shadow-lg hover:shadow-indigo-200 hover:-translate-y-0.5 active:translate-y-0 w-full sm:w-auto"
               asChild
             >
-              <a href="#generate">Get My Ad Strategy (Free Preview) <ArrowRight className="size-4" /></a>
+              <a href="#generate">Get My Free Ad Strategy <ArrowRight className="size-4" /></a>
             </Button>
             <p className="mt-4 text-xs text-[#94A3B8]">No signup &bull; Instant results &bull; Free to start</p>
           </div>
@@ -1117,8 +1123,8 @@ export default function Home() {
       {/* ══════════════════════════════════════════════════
           FOOTER
       ══════════════════════════════════════════════════ */}
-      <footer className="border-t border-[#E2E8F0] py-10 bg-white">
-        <div className="mx-auto max-w-6xl px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <footer className="border-t border-[#E2E8F0] py-8 sm:py-10 bg-white">
+        <div className="mx-auto max-w-6xl px-5 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
             <span className="font-bold text-[#0F172A]" style={H}>
               Angle<span className="text-indigo-500">Craft</span>
