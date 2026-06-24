@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { ProductInput } from "@/components/product-input";
 import {
   ArrowRight,
   Upload,
@@ -359,20 +358,6 @@ function ExampleAdCard({
 ───────────────────────────────────────────────────────────────────── */
 
 export default function Home() {
-  const [url, setUrl] = useState("");
-  const [fileName, setFileName] = useState<string | null>(null);
-
-  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (file) setFileName(file.name);
-  }
-
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    // TODO: wire up to API
-    alert("Coming soon! The AI analysis pipeline is being built.");
-  }
-
   return (
     <div className="flex flex-col min-h-screen bg-white text-[#0F172A]" style={B}>
 
@@ -443,7 +428,7 @@ export default function Home() {
               </h1>
 
               <p className="text-sm sm:text-lg text-[#64748B] leading-relaxed mb-3 max-w-lg">
-                Generate your product's ad angles, hooks, and ready-to-test creatives before spending money
+                Generate your product&apos;s ad angles, hooks, and ready-to-test creatives before spending money
               </p>
               <p className="text-xs sm:text-sm text-indigo-500 font-semibold mb-6 max-w-lg">
                 Plan your next ad testing sprint — instantly.
@@ -697,60 +682,7 @@ export default function Home() {
                 <p className="mt-2 text-xs text-[#94A3B8]">No signup required &bull; Takes 30 seconds</p>
               </div>
 
-              <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-semibold text-[#0F172A] uppercase tracking-wide">
-                    Product URL
-                  </label>
-                  <p className="text-[11px] text-[#94A3B8] -mt-0.5">
-                    Paste any product page — Amazon, Shopify, your own site, etc.
-                  </p>
-                  <Input
-                    type="url"
-                    placeholder="https://your-product-link.com"
-                    value={url}
-                    onChange={(e) => setUrl(e.target.value)}
-                    className="h-11 rounded-xl border-[#E2E8F0] bg-[#F8FAFC] text-[15px] px-4 placeholder:text-[#CBD5E1] focus-visible:border-indigo-400 focus-visible:ring-indigo-400/20 focus-visible:bg-white transition-colors"
-                  />
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <div className="flex-1 border-t border-[#E2E8F0]" />
-                  <span className="text-xs font-medium text-[#94A3B8]">or upload image</span>
-                  <div className="flex-1 border-t border-[#E2E8F0]" />
-                </div>
-
-                <label
-                  htmlFor="file-upload"
-                  className="flex flex-col items-center justify-center gap-2.5 rounded-xl border-2 border-dashed border-[#E2E8F0] bg-[#F8FAFC] hover:border-indigo-300 hover:bg-indigo-50/40 transition-all cursor-pointer py-8 px-6 group"
-                >
-                  <div className="flex size-11 items-center justify-center rounded-xl bg-white border border-[#E2E8F0] shadow-sm group-hover:border-indigo-200 transition-colors">
-                    <Upload className="size-5 text-[#94A3B8] group-hover:text-indigo-400 transition-colors" />
-                  </div>
-                  <div className="text-center">
-                    <p className="text-sm font-semibold text-[#0F172A]">
-                      {fileName
-                        ? <span className="text-indigo-600">{fileName}</span>
-                        : "Upload product image"}
-                    </p>
-                    {!fileName && (
-                      <p className="text-xs text-[#94A3B8] mt-0.5">
-                        or drag &amp; drop &bull; PNG, JPG, WEBP up to 10 MB
-                      </p>
-                    )}
-                  </div>
-                </label>
-                <input id="file-upload" type="file" accept="image/*" className="sr-only" onChange={handleFileChange} />
-
-                <Button
-                  type="submit"
-                  size="lg"
-                  className="gap-2 h-12 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white text-base font-semibold shadow-md shadow-indigo-100 transition-all hover:shadow-lg hover:shadow-indigo-200 hover:-translate-y-0.5 active:translate-y-0"
-                >
-                  Get My Free Ad Strategy
-                  <ArrowRight className="size-4" />
-                </Button>
-              </form>
+              <ProductInput />
             </div>
           </div>
         </section>

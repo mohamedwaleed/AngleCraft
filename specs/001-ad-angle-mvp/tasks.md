@@ -26,10 +26,10 @@
 
 **Purpose**: Install dependencies, initialize Supabase CLI project, configure local stack.
 
-- [ ] T001 Install Next.js dependencies via `pnpm add stripe @stripe/stripe-js zod cheerio @react-pdf/renderer`
-- [ ] T002 Install Supabase CLI dev dependency via `pnpm add -D supabase`
-- [ ] T003 Initialize Supabase CLI project with `pnpm exec supabase init` (creates `supabase/` directory with `config.toml`)
-- [ ] T004 [P] Configure `supabase/config.toml` with storage buckets (`ad-creatives` private, `product-photos` private) and Edge Function settings (`verify_jwt = false` for all functions)
+- [X] T001 Install Next.js dependencies via `pnpm add stripe @stripe/stripe-js zod cheerio @react-pdf/renderer`
+- [X] T002 Install Supabase CLI dev dependency via `pnpm add -D supabase`
+- [X] T003 Initialize Supabase CLI project with `pnpm exec supabase init` (creates `supabase/` directory with `config.toml`)
+- [X] T004 [P] Configure `supabase/config.toml` with storage buckets (`ad-creatives` private, `product-photos` private) and Edge Function settings (`verify_jwt = false` for all functions)
 
 ---
 
@@ -39,17 +39,17 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete.
 
-- [ ] T005 Create initial Supabase migration with `pnpm exec supabase migration new init` and write SQL schema in `supabase/migrations/<timestamp>_init.sql` (all tables: sessions, product_inputs, buyer_insights, ad_angles, ad_creatives, testing_plans, payments; all enums: session_status, input_type, payment_status, image_status; pgmq extension + `image_generation` queue creation; pg_cron schedule for `process-image-queue`; indexes)
-- [ ] T006 Apply migration locally with `pnpm exec supabase db reset` (requires `pnpm exec supabase start` first — Docker must be running)
-- [ ] T007 [P] Create shared TypeScript types and interfaces in `lib/types.ts` (Session, ProductInput, BuyerInsights, AdAngle, AdCreative, TestingPlan, Payment, enums, API request/response types)
-- [ ] T008 [P] Create anonymous session management helpers in `lib/session.ts` (createSession, getSessionByToken, updateSessionStatus, checkSessionExpiry — uses Supabase server client, sets HTTP-only cookie with 7-day maxAge)
-- [ ] T009 [P] Create Edge Function invocation helper in `lib/edge-functions.ts` (invokeEdgeFunction(name, payload) — calls `${NEXT_PUBLIC_SUPABASE_URL}/functions/v1/${name}` via fetch with anon key Authorization header, returns parsed JSON or throws)
-- [ ] T010 [P] Create shared Zod schemas for OpenAI structured outputs in `supabase/functions/_shared/schemas.ts` (ProductContextSchema, BuyerInsightsSchema, AdAnglesSchema, AdConceptsSchema, AdCopySchema, TestingPlanSchema — imported by all Edge Functions via `npm:zod`)
-- [ ] T011 [P] Create shared OpenAI client helper in `supabase/functions/_shared/openai-client.ts` (initializes `npm:openai` with `Deno.env.get("OPENAI_API_KEY")`, exports `generateStructured(schema, messages)` using `zodResponseFormat` and `.parse()`)
-- [ ] T012 [P] Create shared Supabase client helper in `supabase/functions/_shared/supabase-client.ts` (initializes `npm:@supabase/supabase-js` with auto-injected `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` — used only by `process-image-queue`)
-- [ ] T013 [P] Add shadcn/ui components via `pnpm dlx shadcn@latest add progress separator tabs textarea` (adds to `components/ui/progress.tsx`, `components/ui/separator.tsx`, `components/ui/tabs.tsx`, `components/ui/textarea.tsx`)
-- [ ] T014 Update `proxy.ts` to handle anonymous session cookie (`session_token`) — read cookie, do not interfere with existing Supabase auth refresh, keep matcher excluding static assets
-- [ ] T015 [P] Set up Supabase Edge Function secrets file `supabase/.env` with `OPENAI_API_KEY` and `OPENAI_MODEL=gpt-4o-mini` (gitignored — copy from `.env.local`)
+- [X] T005 Create initial Supabase migration with `pnpm exec supabase migration new init` and write SQL schema in `supabase/migrations/<timestamp>_init.sql` (all tables: sessions, product_inputs, buyer_insights, ad_angles, ad_creatives, testing_plans, payments; all enums: session_status, input_type, payment_status, image_status; pgmq extension + `image_generation` queue creation; pg_cron schedule for `process-image-queue`; indexes)
+- [X] T006 Apply migration locally with `pnpm exec supabase db reset` (requires `pnpm exec supabase start` first — Docker must be running)
+- [X] T007 [P] Create shared TypeScript types and interfaces in `lib/types.ts` (Session, ProductInput, BuyerInsights, AdAngle, AdCreative, TestingPlan, Payment, enums, API request/response types)
+- [X] T008 [P] Create anonymous session management helpers in `lib/session.ts` (createSession, getSessionByToken, updateSessionStatus, checkSessionExpiry — uses Supabase server client, sets HTTP-only cookie with 7-day maxAge)
+- [X] T009 [P] Create Edge Function invocation helper in `lib/edge-functions.ts` (invokeEdgeFunction(name, payload) — calls `${NEXT_PUBLIC_SUPABASE_URL}/functions/v1/${name}` via fetch with anon key Authorization header, returns parsed JSON or throws)
+- [X] T010 [P] Create shared Zod schemas for OpenAI structured outputs in `supabase/functions/_shared/schemas.ts` (ProductContextSchema, BuyerInsightsSchema, AdAnglesSchema, AdConceptsSchema, AdCopySchema, TestingPlanSchema — imported by all Edge Functions via `npm:zod`)
+- [X] T011 [P] Create shared OpenAI client helper in `supabase/functions/_shared/openai-client.ts` (initializes `npm:openai` with `Deno.env.get("OPENAI_API_KEY")`, exports `generateStructured(schema, messages)` using `zodResponseFormat` and `.parse()`)
+- [X] T012 [P] Create shared Supabase client helper in `supabase/functions/_shared/supabase-client.ts` (initializes `npm:@supabase/supabase-js` with auto-injected `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` — used only by `process-image-queue`)
+- [X] T013 [P] Add shadcn/ui components via `pnpm dlx shadcn@latest add progress separator tabs textarea` (adds to `components/ui/progress.tsx`, `components/ui/separator.tsx`, `components/ui/tabs.tsx`, `components/ui/textarea.tsx`)
+- [X] T014 Update `proxy.ts` to handle anonymous session cookie (`session_token`) — read cookie, do not interfere with existing Supabase auth refresh, keep matcher excluding static assets
+- [X] T015 [P] Set up Supabase Edge Function secrets file `supabase/.env` with `OPENAI_API_KEY` and `OPENAI_MODEL=gpt-4o-mini` (gitignored — copy from `.env.local`)
 
 **Checkpoint**: Foundation ready — database schema applied, shared lib modules created, Edge Function shared code in place, UI primitives added. User story implementation can now begin.
 
@@ -63,17 +63,17 @@
 
 ### Implementation for User Story 1
 
-- [ ] T016 [P] [US1] Create URL content extraction helper in `lib/extraction.ts` (fetch URL with browser User-Agent, 10s timeout, parse with cheerio: extract title, meta description, h1, price selectors, og:image, features — return structured text + image URL)
-- [ ] T017 [P] [US1] Create Supabase Storage helpers in `lib/storage.ts` (uploadProductPhoto(sessionId, file) → uploads to `product-photos` bucket, returns storage path; getSignedImageUrl(bucket, path) → returns 1-hour signed URL)
-- [ ] T018 [P] [US1] Create `analyze-product` Edge Function in `supabase/functions/analyze-product/index.ts` (AI-only: receives product text + optional image URL, calls OpenAI with ProductContextSchema then BuyerInsightsSchema, returns both — no DB writes)
-- [ ] T019 [US1] Create `POST /api/extract` route handler in `app/api/extract/route.ts` (accepts FormData with `url` or `photo`; creates session row + sets `session_token` cookie; if photo: uploads to Storage via `lib/storage.ts`; if URL: extracts via `lib/extraction.ts`; inserts `product_inputs` row; updates session status to `extracting`; returns product info)
-- [ ] T020 [US1] Create `POST /api/analyze` route handler in `app/api/analyze/route.ts` (reads session by cookie; invokes `analyze-product` Edge Function via `lib/edge-functions.ts` with extracted product text + image URL; writes `buyer_insights` row + updates `product_inputs.product_context`; updates session status to `analyzing` then `angles_generated`; returns Buyer Insights)
-- [ ] T021 [P] [US1] Create `product-input.tsx` client component in `components/product-input.tsx` (URL input field + photo upload field with drag-and-drop, tab toggle between URL/photo modes, submits FormData to `/api/extract`, redirects to `/status` on success, shows validation errors)
-- [ ] T022 [P] [US1] Create `status-pipeline.tsx` client component in `components/status-pipeline.tsx` (receives step definitions + current status as props; renders 3 steps with pending/in-progress/complete/failed states using shadcn Progress; polls session status via fetch; auto-navigates on completion; shows retry button on failure)
-- [ ] T023 [P] [US1] Create `buyer-insights.tsx` client component in `components/buyer-insights.tsx` (receives BuyerInsights data as props; renders buyer profile, main desire, pain points array, buying triggers array, objections array in styled cards)
-- [ ] T024 [US1] Create pre-payment status page in `app/(app)/status/page.tsx` (Server Component: reads session by cookie, fetches session status from DB, renders `status-pipeline.tsx` with 3 steps: "Extracting product information", "Analyzing product", "Generating ad angles")
-- [ ] T025 [US1] Create preview page in `app/(app)/preview/page.tsx` (Server Component: reads session by cookie, fetches Buyer Insights from DB, renders `buyer-insights.tsx` — angles display added in US2)
-- [ ] T026 [US1] Update `app/page.tsx` landing page to integrate `product-input.tsx` component (replace or augment existing static content with the input form section)
+- [X] T016 [P] [US1] Create URL content extraction helper in `lib/extraction.ts` (fetch URL with browser User-Agent, 10s timeout, parse with cheerio: extract title, meta description, h1, price selectors, og:image, features — return structured text + image URL)
+- [X] T017 [P] [US1] Create Supabase Storage helpers in `lib/storage.ts` (uploadProductPhoto(sessionId, file) → uploads to `product-photos` bucket, returns storage path; getSignedImageUrl(bucket, path) → returns 1-hour signed URL)
+- [X] T018 [P] [US1] Create `analyze-product` Edge Function in `supabase/functions/analyze-product/index.ts` (AI-only: receives product text + optional image URL, calls OpenAI with ProductContextSchema then BuyerInsightsSchema, returns both — no DB writes)
+- [X] T019 [US1] Create `POST /api/extract` route handler in `app/api/extract/route.ts` (accepts FormData with `url` or `photo`; creates session row + sets `session_token` cookie; if photo: uploads to Storage via `lib/storage.ts`; if URL: extracts via `lib/extraction.ts`; inserts `product_inputs` row; updates session status to `extracting`; returns product info)
+- [X] T020 [US1] Create `POST /api/analyze` route handler in `app/api/analyze/route.ts` (reads session by cookie; invokes `analyze-product` Edge Function via `lib/edge-functions.ts` with extracted product text + image URL; writes `buyer_insights` row + updates `product_inputs.product_context`; updates session status to `analyzing` then `angles_generated`; returns Buyer Insights)
+- [X] T021 [P] [US1] Create `product-input.tsx` client component in `components/product-input.tsx` (URL input field + photo upload field with drag-and-drop, tab toggle between URL/photo modes, submits FormData to `/api/extract`, redirects to `/status` on success, shows validation errors)
+- [X] T022 [P] [US1] Create `status-pipeline.tsx` client component in `components/status-pipeline.tsx` (receives step definitions + current status as props; renders 3 steps with pending/in-progress/complete/failed states using shadcn Progress; polls session status via fetch; auto-navigates on completion; shows retry button on failure)
+- [X] T023 [P] [US1] Create `buyer-insights.tsx` client component in `components/buyer-insights.tsx` (receives BuyerInsights data as props; renders buyer profile, main desire, pain points array, buying triggers array, objections array in styled cards)
+- [X] T024 [US1] Create pre-payment status page in `app/(app)/status/page.tsx` (Server Component: reads session by cookie, fetches session status from DB, renders `status-pipeline.tsx` with 3 steps: "Extracting product information", "Analyzing product", "Generating ad angles")
+- [X] T025 [US1] Create preview page in `app/(app)/preview/page.tsx` (Server Component: reads session by cookie, fetches Buyer Insights from DB, renders `buyer-insights.tsx` — angles display added in US2)
+- [X] T026 [US1] Update `app/page.tsx` landing page to integrate `product-input.tsx` component (replace or augment existing static content with the input form section)
 
 **Checkpoint**: User can submit a URL or photo, see the 3-step status pipeline advance, and arrive at a preview page showing Buyer Insights. Session persists across reloads.
 
