@@ -6,7 +6,9 @@ import {
   AlertTriangle,
   Sparkles,
   HelpCircle,
+  Lightbulb,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface BuyerInsightsData {
   buyerProfile: string;
@@ -16,29 +18,37 @@ interface BuyerInsightsData {
   objections: string[];
 }
 
-function InsightCard({
-  icon: Icon,
-  label,
-  accent,
-  children,
-}: {
+interface InsightCardProps {
   icon: React.ElementType;
   label: string;
-  accent: { bg: string; fg: string };
+  description: string;
+  accent: { bg: string; icon: string; border: string };
   children: React.ReactNode;
-}) {
+  className?: string;
+}
+
+function InsightCard({ icon: Icon, label, description, accent, children, className }: InsightCardProps) {
   return (
-    <div className="rounded-xl border border-[#E2E8F0] bg-white p-4 shadow-sm">
-      <div className="flex items-center gap-2 mb-3">
+    <div
+      className={cn(
+        "rounded-2xl border bg-white p-5 shadow-sm transition-all hover:shadow-md",
+        accent.border,
+        className
+      )}
+    >
+      <div className="flex items-start gap-3 mb-4">
         <div
-          className="flex size-7 items-center justify-center rounded-lg"
-          style={{ background: accent.bg, color: accent.fg }}
+          className={cn(
+            "flex size-10 shrink-0 items-center justify-center rounded-xl",
+            accent.bg
+          )}
         >
-          <Icon className="size-4" />
+          <Icon className={cn("size-5", accent.icon)} />
         </div>
-        <h3 className="text-xs font-bold uppercase tracking-wide text-[#0F172A]">
-          {label}
-        </h3>
+        <div>
+          <h3 className="text-sm font-bold text-[#0F172A]">{label}</h3>
+          <p className="text-xs text-[#64748B]">{description}</p>
+        </div>
       </div>
       {children}
     </div>
@@ -47,10 +57,10 @@ function InsightCard({
 
 function ListItems({ items, bulletClass }: { items: string[]; bulletClass: string }) {
   return (
-    <ul className="flex flex-col gap-2">
+    <ul className="flex flex-col gap-2.5">
       {items.map((item, i) => (
         <li key={i} className="flex items-start gap-2 text-sm text-[#334155] leading-relaxed">
-          <span className={`mt-1.5 size-1.5 shrink-0 rounded-full ${bulletClass}`} />
+          <span className={cn("mt-1.5 size-1.5 shrink-0 rounded-full", bulletClass)} />
           <span>{item}</span>
         </li>
       ))}
@@ -60,12 +70,38 @@ function ListItems({ items, bulletClass }: { items: string[]; bulletClass: strin
 
 export function BuyerInsights({ data }: { data: BuyerInsightsData }) {
   return (
-    <div className="flex flex-col gap-4">
-      <div className="grid gap-4 sm:grid-cols-2">
+    <div className="rounded-2xl border border-[#E2E8F0] bg-white shadow-xl p-6 sm:p-8">
+      {/* Section header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <div className="flex size-7 items-center justify-center rounded-lg bg-indigo-100">
+              <Lightbulb className="size-4 text-indigo-600" />
+            </div>
+            <h2
+              className="text-xl sm:text-2xl font-bold text-[#0F172A]"
+              style={{ fontFamily: "var(--font-space-grotesk), sans-serif" }}
+            >
+              Buyer Insights
+            </h2>
+          </div>
+          <p className="text-sm text-[#64748B]">
+            What the AI learned about your target buyer and why they buy.
+          </p>
+        </div>
+        <div className="inline-flex items-center gap-1.5 rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1.5 text-xs font-semibold text-indigo-600 self-start sm:self-auto">
+          <Sparkles className="size-3.5" />
+          AI-generated
+        </div>
+      </div>
+
+      {/* Cards grid */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <InsightCard
           icon={Users}
           label="Buyer Profile"
-          accent={{ bg: "rgba(99,102,241,0.10)", fg: "#6366F1" }}
+          description="Who the ideal customer is"
+          accent={{ bg: "bg-indigo-100", icon: "text-indigo-600", border: "border-indigo-100" }}
         >
           <p className="text-sm text-[#334155] leading-relaxed">{data.buyerProfile}</p>
         </InsightCard>
@@ -73,37 +109,40 @@ export function BuyerInsights({ data }: { data: BuyerInsightsData }) {
         <InsightCard
           icon={Target}
           label="Main Desire"
-          accent={{ bg: "rgba(168,85,247,0.10)", fg: "#A855F7" }}
+          description="The core outcome they want"
+          accent={{ bg: "bg-violet-100", icon: "text-violet-600", border: "border-violet-100" }}
         >
           <p className="text-sm text-[#334155] leading-relaxed">{data.mainDesire}</p>
         </InsightCard>
-      </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
         <InsightCard
           icon={AlertTriangle}
           label="Pain Points"
-          accent={{ bg: "rgba(239,68,68,0.10)", fg: "#EF4444" }}
+          description="Frustrations your product solves"
+          accent={{ bg: "bg-rose-100", icon: "text-rose-600", border: "border-rose-100" }}
         >
-          <ListItems items={data.painPoints} bulletClass="bg-red-400" />
+          <ListItems items={data.painPoints} bulletClass="bg-rose-400" />
         </InsightCard>
 
         <InsightCard
           icon={Sparkles}
           label="Buying Triggers"
-          accent={{ bg: "rgba(16,185,129,0.10)", fg: "#10B981" }}
+          description="What makes them act now"
+          accent={{ bg: "bg-emerald-100", icon: "text-emerald-600", border: "border-emerald-100" }}
         >
           <ListItems items={data.buyingTriggers} bulletClass="bg-emerald-400" />
         </InsightCard>
-      </div>
 
-      <InsightCard
-        icon={HelpCircle}
-        label="Objections to Handle"
-        accent={{ bg: "rgba(245,158,11,0.10)", fg: "#F59E0B" }}
-      >
-        <ListItems items={data.objections} bulletClass="bg-amber-400" />
-      </InsightCard>
+        <InsightCard
+          icon={HelpCircle}
+          label="Objections to Handle"
+          description="Doubts to address in your ads"
+          accent={{ bg: "bg-amber-100", icon: "text-amber-600", border: "border-amber-100" }}
+          className="sm:col-span-2 lg:col-span-1"
+        >
+          <ListItems items={data.objections} bulletClass="bg-amber-400" />
+        </InsightCard>
+      </div>
     </div>
   );
 }

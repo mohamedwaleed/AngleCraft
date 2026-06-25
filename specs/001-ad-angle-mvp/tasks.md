@@ -87,11 +87,11 @@
 
 ### Implementation for User Story 2
 
-- [ ] T027 [P] [US2] Create `generate-angles` Edge Function in `supabase/functions/generate-angles/index.ts` (AI-only: receives product context + buyer insights, calls OpenAI with AdAnglesSchema producing 5 angles with labels, hooks, scores; returns array — no DB writes)
-- [ ] T028 [US2] Create `POST /api/angles` route handler in `app/api/angles/route.ts` (reads session by cookie; fetches product context + buyer insights from DB; invokes `generate-angles` Edge Function; inserts 5 `ad_angles` rows with hooks and scores; selects top 3 by score and marks `is_selected = true` (application logic); updates session status to `angles_generated`; returns angles array)
-- [ ] T029 [P] [US2] Create `angle-preview.tsx` client component in `components/angle-preview.tsx` (receives 5 angles as props; renders each angle label + hook in a card; shows score badge; marks top 3 as "Selected for full campaign"; includes copy button per hook)
-- [ ] T030 [US2] Update `app/(app)/preview/page.tsx` to fetch ad angles from DB and render `angle-preview.tsx` alongside `buyer-insights.tsx` (Server Component: reads angles by session_id, passes to client component)
-- [ ] T031 [US2] Wire `/api/angles` into the status pipeline flow — update `app/(app)/status/page.tsx` and `status-pipeline.tsx` so the "Generating ad angles" step triggers `/api/angles` and navigates to `/preview` on completion
+- [X] T027 [P] [US2] Create `generate-angles` Edge Function in `supabase/functions/generate-angles/index.ts` (AI-only: receives product context + buyer insights, calls OpenAI with AdAnglesSchema producing 5 angles with labels, hooks, scores; returns array — no DB writes)
+- [X] T028 [US2] Create `POST /api/angles` route handler in `app/api/angles/route.ts` (reads session by cookie; fetches product context + buyer insights from DB; invokes `generate-angles` Edge Function; inserts 5 `ad_angles` rows with hooks and scores; selects top 3 by score and marks `is_selected = true` (application logic); updates session status to `angles_generated`; returns angles array)
+- [X] T029 [P] [US2] Create `angle-preview.tsx` client component in `components/angle-preview.tsx` (receives 5 angles as props; renders each angle label + hook in a card; shows score badge; marks top 3 as "Selected for full campaign"; includes copy button per hook)
+- [X] T030 [US2] Update `app/(app)/preview/page.tsx` to fetch ad angles from DB and render `angle-preview.tsx` alongside `buyer-insights.tsx` (Server Component: reads angles by session_id, passes to client component)
+- [X] T031 [US2] Wire `/api/angles` into the status pipeline flow — update `app/(app)/status/page.tsx` and `status-pipeline.tsx` so the "Generating ad angles" step triggers `/api/angles` and navigates to `/preview` on completion
 
 **Checkpoint**: Five ad angles with hooks are generated and displayed on the preview page. Top three are selected in the database. Full pre-payment flow works end-to-end.
 

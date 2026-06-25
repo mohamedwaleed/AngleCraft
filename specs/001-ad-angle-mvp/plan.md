@@ -178,8 +178,9 @@ components/
 │   └── textarea.tsx              # NEW: add via shadcn
 ├── product-input.tsx             # Client: URL input + photo upload form
 ├── status-pipeline.tsx           # Client: 3-step status flow (pre & post payment)
-├── angle-preview.tsx             # Client: free preview display with copy buttons
-├── buyer-insights.tsx            # Client: Buyer Insights display
+├── steps-indicator.tsx           # Client: persistent user-facing stepper (Submit Product → Get Ad Angles → Get Your Ads)
+├── angle-preview.tsx             # Client: free preview display with copy buttons + regenerate action
+├── buyer-insights.tsx            # Client: styled Buyer Insights research panel
 ├── creative-card.tsx             # Client: single ad creative display (image + copy + CTA)
 ├── testing-plan-view.tsx         # Client: testing plan display with copy
 ├── checkout-button.tsx           # Client: Stripe checkout redirect button

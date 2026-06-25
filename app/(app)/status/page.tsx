@@ -3,8 +3,9 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionFromCookie } from "@/lib/session";
 import { StatusPipeline, type PipelineStep } from "@/components/status-pipeline";
+import { StepsIndicator, type Step } from "@/components/steps-indicator";
 import type { SessionStatus } from "@/lib/types";
-import { ArrowLeft, Sparkles } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 const PRE_PAYMENT_STEPS: PipelineStep[] = [
   {
@@ -12,28 +13,38 @@ const PRE_PAYMENT_STEPS: PipelineStep[] = [
     label: "Extracting product information",
     description: "Reading your product page and pulling the key details.",
     activeStatuses: ["extracting"],
-    completeStatuses: ["analyzing", "angles_generated", "paid", "generating", "complete"],
+    completeStatuses: ["analyzing", "generating_angles", "angles_generated", "paid", "generating", "complete"],
   },
   {
     id: "analyze",
     label: "Analyzing product",
     description: "Building a buyer psychology profile for your product.",
     activeStatuses: ["analyzing"],
-    completeStatuses: ["angles_generated", "paid", "generating", "complete"],
+    completeStatuses: ["generating_angles", "angles_generated", "paid", "generating", "complete"],
     triggerEndpoint: "/api/analyze",
   },
   {
     id: "angles",
     label: "Generating ad angles",
     description: "Writing five ad angles with hooks and scoring them.",
-    // In Phase 3, the analyze route sets status to `angles_generated` which
-    // completes the pipeline and navigates to /preview. The /api/angles
-    // endpoint is wired in Phase 4 (T031) — until then this step is a visual
-    // placeholder that completes together with the analyze step.
-    activeStatuses: [],
+    activeStatuses: ["generating_angles"],
     completeStatuses: ["angles_generated", "paid", "generating", "complete"],
+    triggerEndpoint: "/api/angles",
   },
 ];
+
+const STEPS: Step[] = [
+  { id: "submit", number: 1, label: "Submit Product", description: "Enter your product URL" },
+  { id: "angles", number: 2, label: "Get Ad Angles", description: "AI finds winning angles" },
+  { id: "ads", number: 3, label: "Get Your Ads", description: "Download your ad package" },
+];
+
+function getCurrentStepId(status: SessionStatus): string {
+  if (status === "input" || status === "extracting" || status === "analyzing") return "submit";
+  if (status === "generating_angles" || status === "angles_generated") return "angles";
+  if (status === "paid" || status === "generating" || status === "complete") return "ads";
+  return "submit";
+}
 
 export default async function StatusPage() {
   const session = await getSessionFromCookie();
@@ -76,14 +87,15 @@ export default async function StatusPage() {
   }
 
   const currentStatus = session.status as SessionStatus;
+  const currentStepId = getCurrentStepId(currentStatus);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#fafafe] via-[#f5f3ff] to-[#eef2ff]">
       <header className="border-b border-[#E2E8F0] bg-white/80 backdrop-blur-md sticky top-0 z-50">
-        <div className="mx-auto max-w-6xl px-5 sm:px-6 flex h-16 items-center justify-between">
+        <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8 flex h-16 items-center justify-between">
           <Link
             href="/"
-            className="flex items-center gap-2 text-[17px] font-bold tracking-tight"
+            className="text-[17px] font-bold tracking-tight"
             style={{ fontFamily: "var(--font-space-grotesk), sans-serif" }}
           >
             Angle<span className="text-indigo-500">Craft</span>
@@ -98,30 +110,63 @@ export default async function StatusPage() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-xl px-5 sm:px-6 py-12 sm:py-20">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 rounded-full border border-indigo-200 bg-white px-3 py-1.5 text-xs font-semibold text-indigo-600 shadow-sm mb-4">
-            <Sparkles className="size-3.5" />
-            Building your free strategy
-          </div>
-          <h1
-            className="text-2xl sm:text-3xl font-bold text-[#0F172A] mb-2"
-            style={{ fontFamily: "var(--font-space-grotesk), sans-serif" }}
-          >
-            Crafting your ad angles
-          </h1>
-          <p className="text-sm text-[#64748B] max-w-sm mx-auto">
-            Hang tight — this usually takes under two minutes. You can leave this
-            page open while we work.
-          </p>
+      <main className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8 py-8 sm:py-12">
+        {/* Step indicator */}
+        <div className="mb-10 sm:mb-12">
+          <StepsIndicator steps={STEPS} currentStepId={currentStepId} />
         </div>
 
-        <div className="rounded-2xl border border-[#E2E8F0] bg-white shadow-xl p-6 sm:p-8">
-          <StatusPipeline
-            steps={PRE_PAYMENT_STEPS}
-            initialStatus={currentStatus}
-            onCompleteHref="/preview"
-          />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Left column: headline + reassurance */}
+          <div className="lg:col-span-1">
+            <h1
+              className="text-2xl sm:text-3xl font-bold text-[#0F172A] mb-3"
+              style={{ fontFamily: "var(--font-space-grotesk), sans-serif" }}
+            >
+              Crafting your ad angles
+            </h1>
+            <p className="text-sm text-[#64748B] mb-6">
+              We&apos;re reading your product page, analyzing the buyer psychology,
+              and writing five winning ad angles. This usually takes under two
+              minutes.
+            </p>
+            <div className="rounded-2xl border border-[#E2E8F0] bg-white p-5 shadow-sm">
+              <p className="text-xs font-semibold uppercase tracking-wide text-[#94A3B8] mb-2">
+                What happens next
+              </p>
+              <ul className="text-sm text-[#64748B] space-y-2">
+                <li className="flex items-start gap-2">
+                  <span className="inline-flex size-5 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-[10px] font-bold text-indigo-600">
+                    1
+                  </span>
+                  You review the free preview.
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="inline-flex size-5 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-[10px] font-bold text-indigo-600">
+                    2
+                  </span>
+                  Pay $9 to unlock the full campaign.
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="inline-flex size-5 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-[10px] font-bold text-indigo-600">
+                    3
+                  </span>
+                  Download 3 ad creatives + testing plan.
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Right column: pipeline */}
+          <div className="lg:col-span-2">
+            <div className="rounded-2xl border border-[#E2E8F0] bg-white shadow-xl p-6 sm:p-8">
+              <StatusPipeline
+                steps={PRE_PAYMENT_STEPS}
+                initialStatus={currentStatus}
+                onCompleteHref="/preview"
+              />
+            </div>
+          </div>
         </div>
       </main>
     </div>

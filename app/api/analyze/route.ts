@@ -121,15 +121,15 @@ export async function POST() {
     );
   }
 
-  // Advance to angles_generated so the status pipeline can trigger /api/angles.
+  // Advance to generating_angles so the status pipeline triggers /api/angles.
   try {
-    await updateSessionStatus(session.id, "angles_generated");
+    await updateSessionStatus(session.id, "generating_angles");
   } catch (err) {
-    console.error("analyze: status update to angles_generated failed:", err);
+    console.error("analyze: status update to generating_angles failed:", err);
   }
 
   const response: AnalyzeResponse = {
-    status: "angles_generated",
+    status: "generating_angles",
     buyerInsights: result.buyerInsights,
   };
 

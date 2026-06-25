@@ -24,10 +24,6 @@
 .DS_Store
 *.pem
 
-# secrets — never commit env files
-.env
-.env.*
-!.env.example
 
 # supabase local stack artifacts
 /supabase/.branches

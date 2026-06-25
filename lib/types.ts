@@ -5,6 +5,7 @@ export type SessionStatus =
   | "input"
   | "extracting"
   | "analyzing"
+  | "generating_angles"
   | "angles_generated"
   | "paid"
   | "generating"

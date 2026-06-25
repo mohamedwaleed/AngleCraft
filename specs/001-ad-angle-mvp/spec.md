@@ -35,12 +35,14 @@ through the processing pipeline in real time, showing three sequential steps:
    product context (category, benefits, audience signals, buyer persona).
 3. **Generating ad angles** — producing the five ad angles and hooks.
 
-Each step is displayed with a clear state (pending, in progress, complete) so
-the user always knows what the system is doing. When all three steps complete,
-the user is taken to the ad-angle preview. The preview shows the five ad angles
-with hooks plus a free Buyer Insights section summarizing the target buyer's
-profile, desires, pain points, triggers, and objections. No account creation or
-login is required — the session is anonymous and tied to the browser session.
+A persistent user-facing stepper at the top of both the status and preview pages
+shows the three high-level milestones of the MVP flow: **Submit Product**, **Get
+Ad Angles**, and **Get Your Ads**. The internal pipeline steps map to the middle
+milestone (Get Ad Angles). When all three pipeline steps complete, the user is
+taken to the ad-angle preview. The preview shows the five ad angles with hooks
+plus a free Buyer Insights section summarizing the target buyer's profile,
+desires, pain points, triggers, and objections. No account creation or login is
+required — the session is anonymous and tied to the browser session.
 
 **Why this priority**: Without a captured product input there is nothing to
 generate. This is the entry point to the entire value chain and is independently
@@ -89,8 +91,11 @@ five distinct ad angles — convenience, time saving, pain point, healthy
 lifestyle, and perfect gift. Each ad angle is paired with exactly one strong
 hook (a single attention-grabbing opening line). When the "Generating ad angles"
 step completes, the user is navigated to the ad-angle preview showing the five
-angles with their hooks. The system also internally scores the angles so the top
-three can be automatically selected for the paid full-campaign creatives.
+angles with their hooks in a professional, full-width card grid. The preview
+also displays the user-facing stepper with the current milestone on **Get Ad
+Angles** and the upcoming **Get Your Ads** milestone. The system also internally
+scores the angles so the top three can be automatically selected for the paid
+full-campaign creatives.
 
 **Why this priority**: The ad angles and hooks are the core creative output and
 the primary reason users come to AngleCraft. They are also the gating artifact
@@ -113,8 +118,9 @@ categories.
    angles are generated, **Then** the system still produces five angles
    appropriate to whatever context was available.
 4. **Given** the "Generating ad angles" step completes, **When** the user
-   arrives at the preview, **Then** the five angles and hooks are visible
-   without further action required.
+   arrives at the preview, **Then** the five angles and hooks are visible in a
+   responsive card grid with a "Regenerate Angles" action, and the Buyer
+   Insights section is displayed as a styled research panel below the angles.
 5. **Given** the five generated ad angles, **When** the system scores them,
    **Then** the top three angles are marked for the paid full-campaign
    creatives.
