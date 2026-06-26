@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getSessionFromCookie } from "@/lib/session";
 import { BuyerInsights } from "@/components/buyer-insights";
 import { AnglePreview } from "@/components/angle-preview";
+import { CheckoutButton } from "@/components/checkout-button";
 import { StepsIndicator, type Step } from "@/components/steps-indicator";
 import type { AngleLabel } from "@/lib/types";
 import { ArrowLeft } from "lucide-react";
@@ -129,6 +130,25 @@ export default async function PreviewPage() {
             </div>
           )}
         </section>
+
+        {/* Paywall CTA */}
+        {session.status === "angles_generated" && (
+          <section className="mb-10 sm:mb-12">
+            <div className="rounded-2xl border border-[#E2E8F0] bg-white shadow-xl p-6 sm:p-8 text-center">
+              <h2
+                className="text-xl sm:text-2xl font-bold text-[#0F172A] mb-2"
+                style={{ fontFamily: "var(--font-space-grotesk), sans-serif" }}
+              >
+                Unlock your full campaign
+              </h2>
+              <p className="text-sm text-[#64748B] mb-6 max-w-xl mx-auto">
+                Get 3 ready-to-run ad creatives (image + headline + copy + CTA)
+                plus a Meta/TikTok testing plan for a one-time $9 payment.
+              </p>
+              <CheckoutButton />
+            </div>
+          </section>
+        )}
 
         {/* Buyer Insights */}
         <section>

@@ -233,7 +233,7 @@ export interface CreativesResponse {
 
 export interface ImageQueueMessage {
   sessionId: string;
-  angleId: string;
+  creativeId: string;
   concept: string;
   prompt: string;
 }

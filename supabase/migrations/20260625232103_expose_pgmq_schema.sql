@@ -1,0 +1,8 @@
+-- The pgmq_public schema is created by Supabase's "Expose Queues via
+-- PostgREST" feature (enabled in the Supabase Dashboard). It exposes
+-- wrapper functions (send, send_batch, read, pop, archive, delete) with
+-- parameter names documented at:
+-- https://supabase.com/docs/guides/queues/api
+--
+-- This migration is intentionally empty — pgmq_public is managed by the
+-- Supabase platform, not by application migrations.

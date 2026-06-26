@@ -23,6 +23,8 @@
 # misc
 .DS_Store
 *.pem
+.env*
+.env.local
 
 
 # supabase local stack artifacts
