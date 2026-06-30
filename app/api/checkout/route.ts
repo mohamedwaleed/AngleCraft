@@ -51,16 +51,22 @@ export async function POST(request: Request) {
       origin: normalizedOrigin,
     });
 
-    const { error: insertError } = await supabase.from("payments").insert({
-      session_id: session.id,
-      stripe_session_id: id,
-      status: "pending",
-      amount: 499,
-      currency: "usd",
-    });
+    const { error: upsertError } = await supabase
+      .from("payments")
+      .upsert(
+        {
+          session_id: session.id,
+          stripe_session_id: id,
+          status: "pending",
+          amount: 499,
+          currency: "usd",
+          completed_at: null,
+        },
+        { onConflict: "session_id" }
+      );
 
-    if (insertError) {
-      console.error("checkout: insert payment failed:", insertError.message);
+    if (upsertError) {
+      console.error("checkout: upsert payment failed:", upsertError.message);
       return NextResponse.json(
         { error: "Failed to record payment attempt" },
         { status: 500 }
