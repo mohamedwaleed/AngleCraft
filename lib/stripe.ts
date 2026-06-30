@@ -1,10 +1,37 @@
 import Stripe from "stripe";
+import { createClient } from "@/lib/supabase/server";
 
-export function getStripe(): Stripe {
-  const secretKey = process.env.STRIPE_SECRET_KEY;
-  if (!secretKey) {
-    throw new Error("STRIPE_SECRET_KEY is not set");
+let cachedVaultSecret: string | null | undefined;
+
+async function getStripeSecret(): Promise<string> {
+  const envSecret = process.env.STRIPE_SECRET_KEY;
+  if (envSecret) {
+    return envSecret;
   }
+
+  if (cachedVaultSecret === undefined) {
+    const supabase = await createClient();
+    const { data, error } = await supabase.rpc("get_secret_by_name", {
+      secret_name: "STRIPE_SECRET_KEY",
+    });
+
+    if (error) {
+      console.error("Failed to read STRIPE_SECRET_KEY from Supabase Vault:", error);
+      throw new Error("STRIPE_SECRET_KEY is not set in environment or Supabase Vault");
+    }
+
+    cachedVaultSecret = data ?? null;
+  }
+
+  if (!cachedVaultSecret) {
+    throw new Error("STRIPE_SECRET_KEY is not set in environment or Supabase Vault");
+  }
+
+  return cachedVaultSecret;
+}
+
+export async function getStripe(): Promise<Stripe> {
+  const secretKey = await getStripeSecret();
   return new Stripe(secretKey, { typescript: true });
 }
 
@@ -27,7 +54,8 @@ export async function createCheckoutSession({
   const successUrl = `${origin}/checkout?success=true&session_token=${encodeURIComponent(sessionToken)}`;
   const cancelUrl = `${origin}/checkout?canceled=true&session_token=${encodeURIComponent(sessionToken)}`;
 
-  const session = await getStripe().checkout.sessions.create({
+  const stripe = await getStripe();
+  const session = await stripe.checkout.sessions.create({
     mode: "payment",
     line_items: [
       {

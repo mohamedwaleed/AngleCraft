@@ -117,7 +117,10 @@ proxy.ts              Middleware: refreshes Supabase auth session
 - `SUPABASE_SERVICE_ROLE_KEY` (server only — never expose to client)
 - `OPENAI_API_KEY` (server only — used by existing `/api/chat`)
 - `OPENAI_MODEL` (optional; defaults to `gpt-4o` in `lib/openai.ts`)
-- `STRIPE_SECRET_KEY` (server only)
+- `STRIPE_SECRET_KEY` (server only). In production this is stored in Supabase Vault
+  and read via `public.get_secret_by_name('STRIPE_SECRET_KEY')` in `lib/stripe.ts`.
+  Local/dev still use the env var. Insert the live key with:
+  `select vault.create_secret('sk_live_...', 'STRIPE_SECRET_KEY');`
 - `STRIPE_WEBHOOK_SECRET` (server only)
 - `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` (client-side Stripe.js)
 

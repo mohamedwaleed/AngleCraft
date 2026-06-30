@@ -72,10 +72,16 @@ Create `.env.local` from the example:
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
-STRIPE_SECRET_KEY=
+STRIPE_SECRET_KEY=           # local/dev only; production reads from Supabase Vault
 STRIPE_WEBHOOK_SECRET=
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
 OPENAI_API_KEY=
+```
+
+In production, `STRIPE_SECRET_KEY` is read from Supabase Vault instead of an env file. After applying the `stripe_secret_vault` migration, insert the live key:
+
+```sql
+select vault.create_secret('sk_live_...', 'STRIPE_SECRET_KEY');
 ```
 
 Edge Function secrets live in `supabase/.env`:
