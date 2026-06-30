@@ -34,7 +34,7 @@ Browser → Next.js Route Handler ──→ Supabase Edge Function ──→ Ope
 |-------|--------|------|---------|-------------|
 | `/api/extract` | POST | None (creates session) | Extract product info from URL or photo | cheerio (local) |
 | `/api/analyze` | POST | Session cookie | Analyze product → Buyer Insights | `analyze-product` Edge Function |
-| `/api/angles` | POST | Session cookie | Generate 5 ad angles + hooks + scoring | `generate-angles` Edge Function |
+| `/api/angles` | POST | Session cookie | Generate 10 candidate angles, score, return top 5 priorities | `generate-angles` Edge Function |
 | `/api/checkout` | POST | Session cookie | Create Stripe Checkout Session | Stripe API (local) |
 | `/api/stripe-webhook` | POST | Stripe signature | Receive Stripe webhook, confirm payment | — (local) |
 | `/api/concepts` | POST | Session cookie + paid | Generate 3 ad concepts | `generate-concepts` Edge Function |
@@ -107,7 +107,9 @@ Invokes the `analyze-product` Edge Function to generate product context and Buye
 
 ## POST /api/angles
 
-Invokes the `generate-angles` Edge Function to produce five ad angles with hooks and AI scoring.
+Invokes the `generate-angles` Edge Function to produce ten candidate ad angles
+with hooks, apply deterministic scoring and category boosts, and return the top
+5 priorities.
 
 **Request**: `{}` (session identified by cookie)
 
@@ -119,21 +121,26 @@ Invokes the `generate-angles` Edge Function to produce five ad angles with hooks
   "angles": [
     {
       "id": "uuid",
-      "angleLabel": "convenience",
-      "hook": "Blend your smoothie anywhere, anytime.",
-      "score": 92,
+      "angleLabel": "pain_point",
+      "hook": "Tired of sweeping every day? Let the robot handle it.",
+      "rationale": "Robot vacuums solve a clear, repetitive household chore.",
+      "score": 9.3,
       "isSelected": true
     }
   ]
 }
 ```
 
-(All five angles returned; `score` and `isSelected` are set by the Edge Function.)
+(All five top-priority angles returned; `score` and `isSelected` are set by the
+Edge Function. `rationale` explains why the angle works for this product.)
 
 **Response** (404): `{ "error": "Session not found or expired" }`
 **Response** (409): `{ "error": "Angles already generated for this session" }`
 
-**Side effects**: Invokes `generate-angles` Edge Function (AI-only, returns results), then writes five `ad_angles` rows with scores. Selects top 3 by score and marks them `is_selected = true` (application logic, not AI).
+**Side effects**: Invokes `generate-angles` Edge Function (AI-only, returns 10
+candidates, scores them, and returns top 5), then writes five `ad_angles` rows
+with scores. Selects top 3 by score and marks them `is_selected = true`
+(application logic, not AI).
 
 ---
 
@@ -185,9 +192,13 @@ Invokes the `generate-concepts` Edge Function to generate one ad concept per sel
   "status": "generating",
   "concepts": [
     {
+      "creativeIndex": 1,
       "angleId": "uuid",
       "angleLabel": "convenience",
-      "concept": "Show the blender in a gym bag context..."
+      "concept": "Photorealistic close-up of the blender in a gym bag...",
+      "placement": "Meta Feed",
+      "aspectRatio": "1:1",
+      "imageText": "Smoothies On-The-Go"
     }
   ]
 }
@@ -213,6 +224,7 @@ Invokes the `generate-copy` Edge Function for headlines/primary text/CTA, then e
   "creatives": [
     {
       "id": "uuid",
+      "creativeIndex": 1,
       "angleLabel": "convenience",
       "headline": "Your Gym Bag's New Best Friend",
       "primaryText": "Fresh smoothies anywhere...",
@@ -246,19 +258,100 @@ Invokes the `generate-testing-plan` Edge Function to generate the structured tes
 {
   "status": "complete",
   "testingPlan": {
-    "platforms": ["meta", "tiktok"],
-    "budgetAllocation": { ... },
-    "audienceGuidance": { ... },
-    "testingDuration": { ... },
-    "keyMetrics": [ ... ],
-    "perAngleGuidance": [ ... ]
+    "campaignStrategy": {
+      "recommendedWinner": 3,
+      "creativePriorities": [3, 2, 1],
+      "primaryPlatform": "Meta Ads",
+      "primaryPlacement": "Meta Feed",
+      "testingDurationDays": 3,
+      "evaluationMetrics": ["Purchases", "Cost Per Purchase", "CTR", "CPC"],
+      "phaseOrder": [3, 2, 1]
+    },
+    "customerInsights": {
+      "targetBuyer": "Parents of children aged 4-10",
+      "mainPain": "Too much screen time",
+      "mainDesire": "Educational entertainment",
+      "mainBuyingTrigger": "Family bonding",
+      "mainObjection": "Will my child actually use it?",
+      "mostImportantBuyerEmotion": "Parents want to feel they are making the best developmental choice for their children."
+    },
+    "recommendedFirstTest": {
+      "creativeIndex": 3,
+      "creativeName": "Pain Point",
+      "why": "Parents respond strongly to solving a real frustration.",
+      "expectedOutcome": "Strong purchase intent from parents who recognize the problem.",
+      "selectionRationale": [
+        "Strongest purchase intent",
+        "Broadest audience appeal"
+      ],
+      "runOn": "Meta Ads — Meta Feed + Instagram Feed"
+    },
+    "creativeStrategies": [
+      {
+        "creativeIndex": 3,
+        "angleLabel": "pain_point",
+        "angleCategory": "Pain Point",
+        "psychology": "Relief from screen-time guilt",
+        "primaryPlacement": "Meta Feed",
+        "secondaryPlacement": "Instagram Feed",
+        "testingPriority": 1,
+        "bestUseCase": "Broad testing",
+        "reasonToTest": "Validates the strongest angle first."
+      }
+    ],
+    "testingIntensity": {
+      "minimum": "$20/day",
+      "recommended": "$50/day",
+      "fast": "$100/day",
+      "explanation": "Testing budgets are based on common e-commerce creative testing practices and should be adjusted to your market, product pricing, and business goals."
+    },
+    "testingPlan": {
+      "phase1": {
+        "create": ["Create one Meta Sales campaign", "Create one broad ad set"],
+        "upload": "Creative #3",
+        "run": "3 days",
+        "evaluate": ["Purchases", "Cost Per Purchase", "CTR", "CPC"],
+        "decision": "If Creative #3 generates purchases at an acceptable cost, increase budget gradually. If it generates clicks but no purchases, test the next creative. If it performs poorly, pause and move to the next creative."
+      },
+      "phase2": {
+        "pause": "Creative #3",
+        "upload": "Creative #2",
+        "run": "3 days",
+        "evaluate": "Review purchases, cost per purchase, CTR, and CPC."
+      },
+      "phase3": {
+        "condition": "If Phase 2 does not win",
+        "upload": "Creative #1",
+        "run": "3 days"
+      }
+    },
+    "whyNotOthers": [
+      {
+        "creativeIndex": 2,
+        "reason": "Recommended later in the testing sprint based on priority."
+      }
+    ],
+    "whyWinner": [
+      "Strongest purchase intent",
+      "Broadest audience appeal",
+      "Strong emotional trigger",
+      "Best visual storytelling opportunity"
+    ],
+    "workflow": {
+      "day1": "Launch Creative #3.",
+      "day4": "Review purchases, cost per purchase, CTR, and CPC.",
+      "ifWinner": "Increase budget gradually.",
+      "ifLoser": "Return to this playbook and launch Creative #2.",
+      "ifNone": "Pause all and revisit the angles before retesting."
+    },
+    "disclaimer": "This playbook is a starting framework and results depend on the product, market, and execution."
   }
 }
 ```
 
 **Response** (402): `{ "error": "Payment required" }`
 
-**Side effects**: Invokes `generate-testing-plan` Edge Function (AI-only, returns results), then creates `testing_plans` row and updates session status to `complete`.
+**Side effects**: Invokes `generate-testing-plan` Edge Function (AI-only, returns results), then creates `testing_plans` row and updates session status to `complete`. Existing plans are returned idempotently only if they have the new shape (`whyWinner`, `campaignType`, `audienceStrategy`, `optimizationGoal`); otherwise they are deleted and regenerated.
 
 ---
 
@@ -337,12 +430,27 @@ reads, Storage uploads, and database updates.
 ```json
 {
   "angles": [
-    { "angleLabel": "convenience", "hook": "...", "score": 92 }
+    {
+      "angleLabel": "pain_point",
+      "hook": "...",
+      "rationale": "...",
+      "criteria": {
+        "purchaseIntent": 10,
+        "audienceReach": 9,
+        "creativePotential": 9,
+        "emotionalStrength": 8
+      },
+      "score": 9.3
+    }
   ]
 }
 ```
 
-**Side effects**: None. The Next.js route handler writes five `ad_angles` rows and marks the top 3 by score as `is_selected` after receiving the response.
+**Side effects**: None. The AI returns labels, hooks, and rationale for the 10
+candidate angles only. Base scores, product-category boosts, and top-5 selection
+are applied deterministically in code. The Next.js route handler writes five
+`ad_angles` rows (the top 5 priorities) and marks the top 3 by score as
+`is_selected` after receiving the response.
 
 ---
 
@@ -357,7 +465,7 @@ reads, Storage uploads, and database updates.
 {
   "productContext": { ... },
   "buyerInsights": { ... },
-  "selectedAngles": [ { "angleLabel": "...", "hook": "..." } ]
+  "selectedAngles": [ { "angleLabel": "...", "hook": "...", "score": 92 } ]
 }
 ```
 
@@ -365,7 +473,14 @@ reads, Storage uploads, and database updates.
 ```json
 {
   "concepts": [
-    { "angleLabel": "...", "concept": "..." }
+    {
+      "angleLabel": "...",
+      "concept": "...",
+      "visualStyle": "photorealistic lifestyle shot",
+      "placement": "Meta Feed",
+      "aspectRatio": "1:1",
+      "imageText": "Optional overlay"
+    }
   ]
 }
 ```
@@ -414,7 +529,16 @@ reads, Storage uploads, and database updates.
   "productContext": { ... },
   "buyerInsights": { ... },
   "angles": [ ... ],
-  "creatives": [ ... ]
+  "creatives": [
+    {
+      "index": 1,
+      "angleLabel": "...",
+      "headline": "...",
+      "primaryText": "...",
+      "cta": "...",
+      "concept": "..."
+    }
+  ]
 }
 ```
 

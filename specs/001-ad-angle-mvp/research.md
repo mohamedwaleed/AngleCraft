@@ -299,7 +299,7 @@ supabase/
 | Function | Purpose | Trigger | Writes to DB? |
 |----------|---------|---------|---------------|
 | `analyze-product` | Product context + Buyer Insights | Called by `/api/analyze` | No — returns results |
-| `generate-angles` | 5 ad angles + hooks + scoring | Called by `/api/angles` | No — returns results |
+| `generate-angles` | 10 candidate angles + hooks + deterministic scoring + top-5 selection | Called by `/api/angles` | No — returns results |
 | `generate-concepts` | 3 ad concepts (paid) | Called by `/api/concepts` | No — returns results |
 | `generate-copy` | Headlines, primary text, CTA (paid) | Called by `/api/creatives` | No — returns results |
 | `generate-testing-plan` | Testing plan (paid) | Called by `/api/testing-plan` | No — returns results |
@@ -511,8 +511,8 @@ All Next.js secrets stored in `.env.local` (gitignored). Server-only vars never 
 
 ## OpenAI Model Selection
 
-**Decision**: Use `gpt-4o-mini` (existing default) for text generation (angles, concepts, creatives, testing plan, buyer insights) and `gpt-image-1` for image generation.
+**Decision**: Use `gpt-4o` for text generation (angles, concepts, creatives, testing plan, buyer insights) and `gpt-image-1` for image generation.
 
-**Rationale**: `gpt-4o-mini` supports structured outputs, is fast, and cost-effective for the MVP. `gpt-image-1` provides good quality ad images at reasonable cost.
+**Rationale**: `gpt-4o` produces stronger reasoning, better creative writing, and more reliable instruction following for structured outputs. This directly improves the perceived intelligence of the strategy, angles, copy, and testing plan. `gpt-image-1` remains the best native image generation model for the ad creatives.
 
-**Upgrade path**: If quality is insufficient, set `OPENAI_MODEL=gpt-4o` via `supabase secrets set` — no code changes required.
+**Cost control**: `gpt-4o` is more expensive than `gpt-4o-mini`. For the $9 one-time purchase, the quality uplift is worth the incremental cost. To switch back, set `OPENAI_MODEL=gpt-4o-mini` via `supabase secrets set` — no code changes required.

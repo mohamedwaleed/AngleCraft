@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Loader2, Sparkles } from "lucide-react";
+import { Loader2, Crown } from "lucide-react";
 
 export function CheckoutButton() {
   const router = useRouter();
@@ -38,14 +38,15 @@ export function CheckoutButton() {
       onClick={handleClick}
       disabled={loading}
       size="lg"
-      className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white shadow-lg shadow-indigo-500/20"
+      className="relative overflow-hidden rounded-full h-14 px-8 text-base font-semibold tracking-tight bg-gradient-to-r from-indigo-700 via-violet-600 to-indigo-700 hover:from-indigo-600 hover:via-violet-500 hover:to-indigo-600 text-white shadow-2xl shadow-violet-500/30 transition-all duration-200 hover:scale-[1.02] hover:-translate-y-0.5 hover:shadow-violet-500/45 disabled:opacity-80"
     >
+      <span className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-1000 ease-in-out hover:translate-x-full" />
       {loading ? (
-        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
       ) : (
-        <Sparkles className="mr-2 h-4 w-4" />
+        <Crown className="mr-2 h-5 w-5" />
       )}
-      Unlock Full Campaign — $9
+      Generate Full Campaign — $4.99
     </Button>
   );
 }

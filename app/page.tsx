@@ -25,6 +25,7 @@ import {
   Film,
   Globe,
 } from "lucide-react";
+import { useState, useEffect } from "react";
 
 /* ─────────────────────────────────────────────────────────────────────
    Font helpers
@@ -64,114 +65,152 @@ function PaidBadge() {
   );
 }
 
-/* ── Hero right panel: angle card ── */
-function HeroPanelAngleCard({
-  icon: Icon,
-  label,
-  hook,
-}: {
-  icon: React.ElementType;
-  label: string;
-  hook: string;
-}) {
+/* ── Hero showcase: rotating real generated campaigns ── */
+const SHOWCASE_SLIDES = [
+  {
+    category: "Beauty & Lifestyle",
+    angle: "Aspiration",
+    headline: "Turn products into scroll-stopping lifestyle ads.",
+    subtext: "Generated from customer psychology and buying intent.",
+    image: "/hero-rhode.png",
+    accent: "#A855F7",
+  },
+  {
+    category: "Home Automation",
+    angle: "Pain Point",
+    headline: "Transform product benefits into buying triggers.",
+    subtext: "Generated from real customer pain points.",
+    image: "/hero-roborock.png",
+    accent: "#6366F1",
+  },
+  {
+    category: "Kids & Family",
+    angle: "Emotional",
+    headline: "Create emotional ads parents actually click.",
+    subtext: "Built for Meta testing campaigns.",
+    image: "/hero-yoto.png",
+    accent: "#EC4899",
+  },
+];
+
+function HeroShowcase() {
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setIndex((i) => (i + 1) % SHOWCASE_SLIDES.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const slide = SHOWCASE_SLIDES[index];
+
   return (
-    <div className="flex items-start gap-3 rounded-xl border border-[#E2E8F0] bg-white p-3.5 shadow-sm">
-      <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-indigo-50">
-        <Icon className="size-3.5 text-indigo-500" />
-      </div>
-      <div className="min-w-0">
-        <div className="flex items-center gap-1.5 mb-0.5">
-          <p className="text-[10px] font-bold uppercase tracking-wide text-indigo-400">{label}</p>
-          <FreeBadge />
-        </div>
-        <p className="text-sm font-semibold text-[#0F172A] leading-snug">&ldquo;{hook}&rdquo;</p>
-      </div>
-    </div>
-  );
-}
-
-/* ── Hero right panel: TikTok-style real ad creative card ── */
-function HeroPanelAdCard({
-  angle,
-  headline,
-  subline,
-  cta,
-  photoSrc,
-  accentColor,
-}: {
-  angle: string;
-  headline: string;
-  subline: string;
-  cta: string;
-  photoSrc: string;
-  accentColor: string;
-}) {
-  return (
-    <div className="group relative rounded-2xl border border-[#E2E8F0] overflow-hidden shadow-lg bg-white">
-      {/* Full photo background */}
-      <div className="relative h-[150px] sm:h-[170px] w-full overflow-hidden">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={photoSrc}
-          alt={headline}
-          className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-[1.03]"
-        />
-
-        {/* Dark gradient overlay for readability */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "linear-gradient(to top, rgba(2,6,23,0.88) 0%, rgba(2,6,23,0.45) 45%, rgba(2,6,23,0.10) 100%)",
-          }}
-        />
-
-        {/* Angle tag — top-left */}
-        <div className="absolute top-3 left-3">
-          <span
-            className="inline-flex items-center rounded-full px-2.5 py-1 text-[10px] font-bold text-white border border-white/25 shadow-sm"
-            style={{ background: `${accentColor}E6` }}
-          >
-            {angle}
+    <div className="relative w-full max-w-sm mx-auto lg:max-w-none">
+      <div className="relative rounded-2xl border border-[#E2E8F0] bg-white shadow-2xl shadow-indigo-900/5 overflow-hidden">
+        {/* Real output label */}
+        <div className="px-4 pt-2 pb-1 bg-white flex items-center justify-center">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-indigo-50 border border-indigo-100 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-indigo-600">
+            <Sparkles className="size-3" />
+            Generated Campaign Preview
           </span>
         </div>
 
-        {/* Paid badge — top-right */}
-        <div className="absolute top-3 right-3">
-          <span className="inline-flex items-center gap-1 rounded-full bg-slate-900/70 backdrop-blur-sm border border-white/20 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
-            <Lock className="size-2.5" /> Paid
-          </span>
+        {/* Image stage */}
+        <div className="relative aspect-[6/5] overflow-hidden bg-[#F8FAFC]">
+          {SHOWCASE_SLIDES.map((s, i) => (
+            <div
+              key={s.category}
+              className="absolute inset-0 transition-all duration-700 ease-out"
+              style={{
+                opacity: i === index ? 1 : 0,
+                transform: i === index ? "translateY(0) scale(1)" : "translateY(10px) scale(0.98)",
+                zIndex: i === index ? 1 : 0,
+              }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={s.image}
+                alt={s.headline}
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+            </div>
+          ))}
+
+          {/* Category badge */}
+          <div key={`badge-${index}`} className="absolute top-4 left-4 z-10 animate-in fade-in slide-in-from-top-2 duration-500">
+            <span className="inline-flex items-center rounded-md bg-white/95 backdrop-blur-sm px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-[#475569] border border-white/50 shadow-sm">
+              {slide.category}
+            </span>
+          </div>
+
+          {/* Angle badge */}
+          <div key={`angle-${index}`} className="absolute top-4 right-4 z-10 animate-in fade-in slide-in-from-top-2 duration-500">
+            <span
+              className="inline-flex items-center rounded-full px-2.5 py-1 text-[10px] font-bold text-white border border-white/25 shadow-sm"
+              style={{ background: `${slide.accent}E6` }}
+            >
+              {slide.angle}
+            </span>
+          </div>
+
+          {/* Dots */}
+          <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-1.5 z-10">
+            {SHOWCASE_SLIDES.map((s, i) => (
+              <button
+                key={s.category}
+                onClick={() => setIndex(i)}
+                className={`size-2 rounded-full transition-all duration-300 ${i === index ? "bg-white scale-110" : "bg-white/50 hover:bg-white/80"}`}
+                aria-label={`Show ${s.category} slide`}
+              />
+            ))}
+          </div>
         </div>
 
-        {/* Text overlay — big hook headline */}
-        <div className="absolute inset-x-0 bottom-0 flex flex-col justify-end p-4 pt-10">
-          <p className="text-[15px] font-black text-white leading-[1.15] drop-shadow-lg max-w-[85%]">
-            {headline}
+        {/* Copy block */}
+        <div key={`copy-${index}`} className="px-4 sm:px-5 py-3 bg-white animate-in fade-in slide-in-from-bottom-2 duration-500">
+          <p className="text-base sm:text-lg font-bold text-[#0F172A] leading-snug mb-1">
+            {slide.headline}
+          </p>
+          <p className="text-xs sm:text-sm text-[#64748B] leading-snug">
+            {slide.subtext}
           </p>
         </div>
 
-        {/* CTA button — inside image, bottom-right */}
-        <div className="absolute bottom-3 right-3">
-          <span
-            className="inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-[11px] font-bold text-white shadow-lg"
-            style={{ background: accentColor }}
-          >
-            {cta} <ArrowRight className="size-3" />
+        {/* Value stack */}
+        <div className="px-4 sm:px-5 py-2 bg-white border-t border-[#F1F5F9]">
+          <div className="grid grid-cols-2 gap-x-4 gap-y-1.5">
+            <span className="inline-flex items-center gap-1.5 text-[11px] sm:text-xs font-medium text-[#0F172A]">
+              <CheckCircle className="size-3.5 text-emerald-500" /> 5 Ad Angles
+            </span>
+            <span className="inline-flex items-center gap-1.5 text-[11px] sm:text-xs font-medium text-[#0F172A]">
+              <CheckCircle className="size-3.5 text-emerald-500" /> Buyer Insights
+            </span>
+            <span className="inline-flex items-center gap-1.5 text-[11px] sm:text-xs font-medium text-[#0F172A]">
+              <CheckCircle className="size-3.5 text-emerald-500" /> 3 Ready-to-Test Creatives
+            </span>
+            <span className="inline-flex items-center gap-1.5 text-[11px] sm:text-xs font-medium text-[#0F172A]">
+              <CheckCircle className="size-3.5 text-emerald-500" /> Testing Playbook
+            </span>
+          </div>
+        </div>
+
+        {/* Explanation */}
+        <div className="px-4 sm:px-5 py-2 bg-[#F8FAFC] border-t border-[#F1F5F9]">
+          <p className="text-[11px] sm:text-xs text-[#64748B] leading-relaxed">
+            Built from buyer psychology and designed for testing.
+          </p>
+        </div>
+
+        {/* Footer */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 px-4 sm:px-5 py-2 bg-[#F8FAFC] border-t border-[#F1F5F9]">
+          <span className="inline-flex items-center gap-1 text-[10px] sm:text-xs font-semibold text-[#0F172A]">
+            <CheckCircle className="size-3.5 text-emerald-500" /> Generated by AngleCraft
+          </span>
+          <span className="inline-flex items-center gap-1 text-[10px] sm:text-xs font-semibold text-[#0F172A]">
+            <CheckCircle className="size-3.5 text-emerald-500" /> Ready for Meta Ads testing
           </span>
         </div>
-      </div>
-
-      {/* Short caption below */}
-      <div className="px-3 py-2.5 bg-white">
-        <p className="text-[11px] font-medium text-[#64748B] leading-tight">{subline}</p>
-      </div>
-
-      {/* Lock state overlay — subtle blur/dim, still shows the ad */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-white/15 backdrop-blur-[1px] transition-all duration-300 hover:bg-white/10 hover:backdrop-blur-[0.5px]">
-        <div className="flex size-9 items-center justify-center rounded-full bg-slate-900/80 shadow-lg">
-          <Lock className="size-4 text-white" />
-        </div>
-        <p className="text-[11px] font-bold text-slate-900 drop-shadow-sm">Unlock to generate this ad</p>
       </div>
     </div>
   );
@@ -252,7 +291,7 @@ function ExampleAdCard({
           <span className="absolute top-3 right-3 rounded bg-black/60 px-2 py-0.5 text-[10px] font-semibold text-white/80">
             {angle}
           </span>
-          {/* Casual lowercase headline — feels like a real TikTok caption */}
+          {/* Casual lowercase headline — feels like a real social caption */}
           <div className="absolute inset-x-0 bottom-0 flex flex-col justify-end p-4 pt-10">
             <p className="text-base font-bold text-white leading-[1.2] drop-shadow-lg max-w-[95%] lowercase">
               {headline}
@@ -373,6 +412,7 @@ export default function Home() {
             <a href="#how" className="hover:text-[#0F172A] transition-colors">How it works</a>
             <a href="#preview" className="hover:text-[#0F172A] transition-colors">What you get</a>
             <a href="#pricing" className="hover:text-[#0F172A] transition-colors">Pricing</a>
+            <a href="/contact" className="hover:text-[#0F172A] transition-colors">Contact</a>
           </nav>
           <Button
             size="sm"
@@ -428,9 +468,9 @@ export default function Home() {
               </h1>
 
               <p className="text-sm sm:text-lg text-[#64748B] leading-relaxed mb-3 max-w-lg">
-                Generate your product&apos;s ad angles, hooks, and ready-to-test creatives before spending money
+                Generate your product&apos;s ad angles, hooks, and ready-to-test creatives before spending money on ads.
               </p>
-              <p className="text-xs sm:text-sm text-indigo-500 font-semibold mb-6 max-w-lg">
+              <p className="text-xs sm:text-sm text-indigo-500 font-medium mb-6 max-w-lg">
                 Plan your next ad testing sprint — instantly.
               </p>
 
@@ -449,136 +489,33 @@ export default function Home() {
                 <p className="mt-2.5 text-xs text-[#94A3B8]">No credit card required</p>
               </div>
 
-              {/* Micro-proof — free vs paid */}
+              {/* Trust bullets */}
               <div className="flex flex-col gap-2">
                 <div className="flex items-center gap-2.5">
                   <CheckCircle className="size-4 text-emerald-500 shrink-0" />
-                  <span className="text-sm text-[#64748B]">
-                    <span className="font-semibold text-[#0F172A]">Free: </span> Ad angles &amp; hooks
-                  </span>
+                  <span className="text-sm text-[#64748B]">Product-specific</span>
                 </div>
                 <div className="flex items-center gap-2.5">
-                  <Lock className="size-4 text-indigo-400 shrink-0" />
-                  <span className="text-sm text-[#64748B]">
-                    <span className="font-semibold text-[#0F172A]">Paid: </span> full testing plan + creatives
-                  </span>
+                  <CheckCircle className="size-4 text-emerald-500 shrink-0" />
+                  <span className="text-sm text-[#64748B]">Generated from buyer psychology</span>
+                </div>
+                <div className="flex items-center gap-2.5">
+                  <CheckCircle className="size-4 text-emerald-500 shrink-0" />
+                  <span className="text-sm text-[#64748B]">Ready to test on Meta Ads</span>
                 </div>
               </div>
 
 
             </div>
 
-            {/* ── Right: product output panel ── */}
+            {/* ── Right: rotating generated campaign showcase ── */}
             <div className="relative mt-6 lg:mt-0">
-              {/* Rotated backdrop — hidden on mobile to avoid overflow */}
-              <div
-                aria-hidden
-                className="absolute inset-0 rounded-3xl hidden lg:block"
-                style={{
-                  background: "linear-gradient(135deg, rgba(99,102,241,0.07) 0%, rgba(168,85,247,0.05) 100%)",
-                  border: "1px solid rgba(99,102,241,0.12)",
-                  transform: "rotate(1.5deg) scale(1.02)",
-                }}
-              />
-
-              <div className="relative rounded-2xl border border-[#E2E8F0] bg-white shadow-xl p-4 sm:p-5 flex flex-col gap-3 sm:gap-4">
-                {/* Panel header */}
-                <div className="flex items-center justify-between pb-2 border-b border-[#F1F5F9]">
-                  <div className="flex items-center gap-2">
-                    <div className="size-2 rounded-full bg-indigo-500" />
-                    <span className="text-xs font-bold text-[#0F172A]" style={H}>Results for your product</span>
-                  </div>
-                </div>
-
-                {/* Free section */}
-                <div className="rounded-xl border border-emerald-200 bg-emerald-50/40 p-4">
-                  <div className="flex items-center gap-2 mb-3">
-                    <CheckCircle className="size-4 text-emerald-500" />
-                    <span className="text-xs font-bold text-emerald-700 uppercase tracking-wide">Free Preview</span>
-                  </div>
-                  <ul className="flex flex-col gap-2">
-                    {["5 Ad Angles", "5 Hooks", "Buyer Insights"].map((item) => (
-                      <li key={item} className="flex items-center gap-2 text-sm text-[#0F172A]">
-                        <CheckCircle className="size-3.5 text-emerald-500 shrink-0" />
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* Locked section */}
-                <div className="relative rounded-xl border border-indigo-200 bg-indigo-50/30 p-4 overflow-hidden">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Lock className="size-4 text-indigo-500" />
-                    <span className="text-xs font-bold text-indigo-700 uppercase tracking-wide">Full Campaign</span>
-                  </div>
-                  <ul className="flex flex-col gap-2 mb-4">
-                    <li className="flex flex-col gap-0.5 text-sm text-[#475569]">
-                      <span className="flex items-center gap-2">
-                        <CheckCircle className="size-3.5 text-indigo-400 shrink-0" />
-                        3 Ready-to-run Ad Creatives
-                      </span>
-                      <span className="text-xs text-[#94A3B8] pl-5.5">Image + Copy + CTA</span>
-                    </li>
-                    {["Ready-to-use ad copy", "3 creative concepts", "Testing roadmap"].map((item) => (
-                      <li key={item} className="flex items-center gap-2 text-sm text-[#475569]">
-                        <CheckCircle className="size-3.5 text-indigo-400 shrink-0" />
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-
-                  {/* Small creative card preview */}
-                  <div className="relative rounded-lg border border-indigo-100 overflow-hidden">
-                    <div className="relative h-28 w-full overflow-hidden">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src="https://images.unsplash.com/photo-1536304447766-da0ed4ce1b73?w=600&q=80&auto=format&fit=crop"
-                        alt="Ad creative preview"
-                        className="absolute inset-0 w-full h-full object-cover object-center"
-                      />
-                      <div
-                        className="absolute inset-0"
-                        style={{
-                          background:
-                            "linear-gradient(to top, rgba(2,6,23,0.88) 0%, rgba(2,6,23,0.40) 50%, rgba(2,6,23,0.08) 100%)",
-                        }}
-                      />
-                      <span className="absolute top-2 left-2 rounded bg-indigo-500 px-1.5 py-0.5 text-[9px] font-bold text-white">
-                        Health &amp; Wellness
-                      </span>
-                      <p className="absolute bottom-2 left-2 right-2 text-sm font-black text-white leading-tight drop-shadow">
-                        Fresh smoothies in seconds
-                      </p>
-                    </div>
-                    {/* Format badges */}
-                    <div className="flex items-center gap-1.5 px-2 py-1.5 bg-white border-t border-indigo-100">
-                      <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[8px] font-semibold text-[#64748B]">Facebook Feed</span>
-                      <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[8px] font-semibold text-[#64748B]">Image Ad</span>
-                    </div>
-                  </div>
-
-                  {/* Unlock CTA */}
-                  <div className="mt-4">
-                    <Button
-                      size="sm"
-                      className="gap-1.5 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white px-4 shadow-sm w-full"
-                      asChild
-                    >
-                      <a href="#generate">
-                        Unlock <ArrowRight className="size-3.5" />
-                      </a>
-                    </Button>
-                  </div>
-                </div>
-              </div>
-
-
+              <HeroShowcase />
             </div>
           </div>
 
           {/* Differentiation line */}
-          <div className="relative mx-auto max-w-2xl px-5 sm:px-6 mt-10 sm:mt-12 text-center">
+          <div className="relative mx-auto max-w-2xl px-5 sm:px-6 mt-6 sm:mt-8 text-center">
             <p className="text-sm sm:text-lg font-semibold text-[#0F172A] leading-relaxed">
               Most AI tools create images.{" "}
               <span className="text-indigo-500">AngleCraft tells you what ads to create — then generates them.</span>
@@ -586,7 +523,7 @@ export default function Home() {
           </div>
 
           {/* Built for */}
-          <div className="relative mx-auto max-w-xl px-5 sm:px-6 mt-10 sm:mt-16 text-center">
+          <div className="relative mx-auto max-w-xl px-5 sm:px-6 mt-8 sm:mt-10 text-center">
             <p className="text-sm font-semibold text-[#64748B] mb-4">
               Built for
             </p>
@@ -810,7 +747,7 @@ export default function Home() {
                 { icon: Target, title: "High-potential angles based on psychology", desc: "We find the emotional triggers that make buyers stop scrolling." },
                 { icon: Sparkles, title: "High-converting hooks & copy", desc: "Primary text, headlines, and openers that drive action." },
                 { icon: ImageIcon, title: "AI-generated ad creatives", desc: "Image and video concepts built around your best angles." },
-                { icon: Download, title: "Ready-to-use ad pack", desc: "Download everything, formatted for TikTok and Meta." },
+                { icon: Download, title: "Ready-to-use ad pack", desc: "Download everything, formatted for Meta Ads." },
                 { icon: LineChart, title: "Testing recommendations", desc: "Know which angles to test first and how to scale winners." },
                 { icon: Lightbulb, title: "Decision-making support", desc: "Get a clear strategy, not just a list of ideas." },
               ].map(({ icon: Icon, title, desc }) => (
@@ -869,7 +806,7 @@ export default function Home() {
                 Real Ads Generated by AngleCraft
               </h2>
               <p className="text-sm sm:text-base text-[#64748B] max-w-lg mx-auto">
-                Different angles, different audiences — all ready to test on TikTok &amp; Meta.
+                Different angles, different audiences — all ready to test on Meta Ads.
               </p>
             </div>
 
@@ -1000,7 +937,7 @@ export default function Home() {
                   { icon: ImageIcon, text: "3 ready-to-use ad creatives" },
                   { icon: Target, text: "Multiple angles to test" },
                   { icon: Zap, text: "Hooks & primary text included" },
-                  { icon: ShoppingCart, text: "Formats for TikTok & Meta" },
+                  { icon: ShoppingCart, text: "Formats for Meta Ads" },
                   { icon: CheckCircle, text: "Testing recommendations" },
                 ].map(({ icon: Icon, text }) => (
                   <li key={text} className="flex items-center gap-3.5">
@@ -1063,7 +1000,10 @@ export default function Home() {
             </span>
             <p className="text-xs text-[#94A3B8] mt-0.5">AI-powered ad idea generator for e-commerce brands</p>
           </div>
-          <p className="text-xs text-[#94A3B8]">&copy; 2026 AngleCraft</p>
+          <div className="flex items-center gap-4 text-xs text-[#94A3B8]">
+            <a href="/contact" className="hover:text-[#0F172A] transition-colors">Contact</a>
+            <span>&copy; 2026 AngleCraft</span>
+          </div>
         </div>
       </footer>
     </div>

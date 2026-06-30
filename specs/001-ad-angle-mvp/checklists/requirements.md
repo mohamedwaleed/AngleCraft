@@ -42,13 +42,13 @@
   session retention — updated FR-005, Session entity, assumptions, added
   expiry edge case; (3) URL extraction captures text + main product image —
   updated FR-003, Product Input entity, assumptions; (4) testing plan targets
-  Meta + TikTok — updated FR-017, Testing Plan entity, assumptions; (5) single
+  Meta Ads only (TikTok removed) — updated FR-017, Testing Plan entity, assumptions; (5) single
   PDF download for all artifacts plus individual copy — added FR-016a, updated
   FR-019, US-4/5 acceptance scenarios.
 - Updated 2026-06-24: Aligned spec to the screenshot goal. Free preview now
   includes 5 ad angles + 5 hooks + Buyer Insights (buyer profile, main desire,
   pain points, triggers, objections). Full campaign generates 3 ready-to-run ad
-  creatives (AI-selected top 3 angles), each with generated image + headline +
+  creatives (selected top 3 angles via deterministic scoring), each with generated image + headline +
   primary text + CTA. Updated US-1/2/3/4/5, FR-003/005e/008/009/011c/013/
   013a/014/015/016/016a/018, Key Entities, Edge Cases, Assumptions, and
   Success Criteria.

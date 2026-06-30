@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Edge Function: generate-copy
 // AI-only: receives product context + buyer insights + 3 concepts, calls
 // OpenAI with AdCopySchema, returns 3 creatives with headline/primaryText/cta
@@ -62,12 +63,12 @@ Deno.serve(async (req: Request) => {
       {
         role: "system",
         content:
-          "You are an expert direct-response copywriter for social media ads (Meta and TikTok). Given a product, buyer insights, and three creative concepts, write ad copy for each concept. For each creative, provide: a headline (max 40 chars — punchy, attention-grabbing), primary text (max 200 chars — persuasive body copy), and a CTA (max 20 chars — action-oriented). Write for the target audience described in the buyer insights. Make each creative feel distinct.",
+          "You are an expert direct-response copywriter for Meta Ads. Given a product, buyer insights, and three creative concepts, write ad copy for each concept. For each creative, provide: creativeIndex (the 1-based index matching the input concept order), a headline (max 40 chars — punchy, attention-grabbing), primary text (max 200 chars — persuasive body copy), and a CTA (max 20 chars — action-oriented). Write for the target audience described in the buyer insights. Return the three creatives in the same order as the input concepts, with creativeIndex 1 for the first concept, 2 for the second, and 3 for the third. Make each creative feel distinct.",
       },
       {
         role: "user",
         content:
-          `Product context:\n${JSON.stringify(body.productContext, null, 2)}\n\nBuyer insights:\n${JSON.stringify(body.buyerInsights, null, 2)}\n\nConcepts:\n${JSON.stringify(body.concepts, null, 2)}\n\nWrite exactly three sets of ad copy — one for each concept. Each must include the angleLabel matching the input concept.`,
+          `Product context:\n${JSON.stringify(body.productContext, null, 2)}\n\nBuyer insights:\n${JSON.stringify(body.buyerInsights, null, 2)}\n\nConcepts (in order — copy 1 must be for the first concept, copy 2 for the second, copy 3 for the third):\n${JSON.stringify(body.concepts, null, 2)}\n\nWrite exactly three sets of ad copy — one for each concept, in the same order. Each must include creativeIndex (1, 2, or 3 matching the concept order) and the angleLabel matching the input concept.`,
       },
     ]);
 

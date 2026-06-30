@@ -1,36 +1,108 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AngleCraft
 
-## Getting Started
+AngleCraft is an AI Creative Strategist that turns a product URL or photo into a
+ready-to-run Meta Ads testing sprint: five ad angles with hooks, three
+ready-to-run ad creatives (image + copy + CTA), and a structured Campaign Launch Plan.
 
-First, run the development server:
+## What it does
+
+1. **Capture product input** — paste a product URL or upload a photo.
+2. **Extract and analyze** — the system extracts product context and generates
+   Customer Insights (target buyer, pain, desire, trigger, objection, emotion).
+3. **Generate ad angles** — produces five distinct angles with hooks, then
+   selects the top three using a deterministic scoring framework.
+4. **Generate creatives** — for each selected angle, creates a concept, headline,
+   primary text, CTA, and AI-generated image.
+5. **Build the Campaign Launch Plan** — recommends a first test, lays out three
+   execution phases, budget intensity tiers, a creative ranking summary, and a
+   day-by-day workflow.
+6. **Download** — export the full Campaign Launch Plan as a formatted PDF or copy individual
+   pieces of copy to the clipboard.
+
+## Pricing
+
+AngleCraft is free to start: submit a product URL and get five ad angles, hooks,
+and Buyer Insights at no cost.
+
+Upgrade to the full Campaign Launch Plan for a one-time **$4.99** payment
+(regular $8.99). The launch price is available for the first 100 users and
+unlocks:
+
+- 3 ready-to-run ad creatives (image + headline + copy + CTA)
+- The full Campaign Launch Plan with testing phases, budgets, and decision rules
+- A creative ranking summary with launch order
+- PDF export
+
+Payment is handled securely through Stripe. No subscription, no hidden fees.
+
+## Tech stack
+
+- **Framework:** Next.js 16.2.9 (App Router, React 19, TypeScript 5)
+- **Styling:** Tailwind CSS v4, shadcn/ui
+- **Backend / data:** Supabase (Postgres, Edge Functions, Storage, Queue, Migrations)
+- **AI:** OpenAI (`gpt-4o` for text, `gpt-image-1` for images)
+- **Payments:** Stripe Checkout Sessions
+
+## Getting started
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+# Install dependencies
+pnpm install
+
+# Start the Next.js dev server
 pnpm dev
-# or
-bun dev
+
+# In a separate terminal, start the Supabase local stack
+pnpm exec supabase start
+
+# Apply migrations
+pnpm exec supabase migration up
+
+# Serve Edge Functions
+pnpm exec supabase functions serve --env-file ./supabase/.env --no-verify-jwt
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Create `.env.local` from the example:
 
-## Learn More
+```bash
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+STRIPE_SECRET_KEY=
+STRIPE_WEBHOOK_SECRET=
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
+OPENAI_API_KEY=
+```
 
-To learn more about Next.js, take a look at the following resources:
+Edge Function secrets live in `supabase/.env`:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+OPENAI_API_KEY=
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Documentation
 
-## Deploy on Vercel
+- [Agent guide](./AGENTS.md)
+- [Feature spec](./specs/001-ad-angle-mvp/spec.md)
+- [Plan](./specs/001-ad-angle-mvp/plan.md)
+- [Data model](./specs/001-ad-angle-mvp/data-model.md)
+- [API contracts](./specs/001-ad-angle-mvp/contracts/api-contracts.md)
+- [AI contracts](./specs/001-ad-angle-mvp/contracts/ai-contracts.md)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Verification
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Before committing, run the standard checks:
+
+```bash
+pnpm lint
+pnpm exec tsc --noEmit
+pnpm build
+```
+
+## License
+
+Proprietary — All rights reserved.

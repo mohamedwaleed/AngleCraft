@@ -4,6 +4,7 @@ import { getSessionFromCookie, updateSessionStatus } from "@/lib/session";
 import { invokeEdgeFunction } from "@/lib/edge-functions";
 import { enqueueImageJobs } from "@/lib/queue";
 import { verifyPaidSession } from "@/lib/payment";
+import { getSignedImageUrl, PRODUCT_PHOTOS_BUCKET } from "@/lib/storage";
 import type {
   CreativesResponse,
   GenerateCopyResult,
@@ -11,6 +12,7 @@ import type {
   BuyerInsights,
   AngleLabel,
   ImageStatus,
+  AspectRatio,
 } from "@/lib/types";
 
 export async function POST() {
@@ -37,8 +39,9 @@ export async function POST() {
   // Fetch existing creatives to check if copy has already been generated.
   const { data: existing } = await supabase
     .from("ad_creatives")
-    .select("id, angle_id, concept, headline, primary_text, cta, image_status, image_storage_path, ad_angles(angle_label)")
-    .eq("session_id", session.id);
+    .select("id, angle_id, creative_index, concept, placement, aspect_ratio, headline, primary_text, cta, image_text, image_status, image_storage_path, ad_angles(angle_label)")
+    .eq("session_id", session.id)
+    .order("creative_index", { ascending: true });
 
   if (!existing || existing.length === 0) {
     return NextResponse.json(
@@ -50,14 +53,42 @@ export async function POST() {
   const creativeRows = existing as unknown as {
     id: string;
     angle_id: string;
+    creative_index: number;
     concept: string;
+    placement: string | null;
+    aspect_ratio: AspectRatio | null;
     headline: string | null;
     primary_text: string | null;
     cta: string | null;
+    image_text: string | null;
     image_status: ImageStatus;
     image_storage_path: string | null;
     ad_angles: { angle_label: AngleLabel } | null;
   }[];
+
+  // Fetch the product input so we can pass the product image to the image
+  // generation queue. This is needed in both the idempotent and full paths.
+  const { data: productInputRow } = await supabase
+    .from("product_inputs")
+    .select()
+    .eq("session_id", session.id)
+    .maybeSingle();
+
+  if (!productInputRow) {
+    return NextResponse.json(
+      { error: "No product input found." },
+      { status: 404 }
+    );
+  }
+  const productInput = productInputRow as ProductInput;
+
+  const productImageUrl = await resolveProductImageUrl(productInput);
+  if (!productImageUrl) {
+    return NextResponse.json(
+      { error: "Product image is required to generate creatives." },
+      { status: 422 }
+    );
+  }
 
   // If all creatives already have copy, return them idempotently (still
   // enqueue image jobs for any creatives that don't have a complete image).
@@ -72,7 +103,9 @@ export async function POST() {
         sessionId: session.id,
         creativeId: c.id,
         concept: c.concept,
-        prompt: `Professional product ad image for: ${c.concept}. Clean, modern, high-converting social media ad creative.`,
+        prompt: buildImagePrompt(c.concept, c.placement, c.aspect_ratio, c.image_text),
+        aspectRatio: c.aspect_ratio ?? "1:1",
+        productImageUrl,
       }));
 
     if (pendingJobs.length > 0) {
@@ -105,28 +138,6 @@ export async function POST() {
     return NextResponse.json(response, { status: 200 });
   }
 
-  // Fetch product context + buyer insights from DB.
-  const { data: productInputRow } = await supabase
-    .from("product_inputs")
-    .select()
-    .eq("session_id", session.id)
-    .maybeSingle();
-
-  if (!productInputRow) {
-    return NextResponse.json(
-      { error: "No product input found." },
-      { status: 404 }
-    );
-  }
-
-  const productInput = productInputRow as ProductInput;
-  if (!productInput.product_context) {
-    return NextResponse.json(
-      { error: "Product context not yet generated." },
-      { status: 409 }
-    );
-  }
-
   const { data: buyerInsightsRow } = await supabase
     .from("buyer_insights")
     .select()
@@ -155,6 +166,7 @@ export async function POST() {
         objections: buyerInsights.objections,
       },
       concepts: creativeRows.map((c) => ({
+        creativeIndex: c.creative_index,
         angleLabel: c.ad_angles?.angle_label ?? "",
         concept: c.concept,
       })),
@@ -168,14 +180,14 @@ export async function POST() {
     );
   }
 
-  // Match copy results to creative rows by angleLabel and update them.
-  const copyMap = new Map(
-    result.creatives.map((c) => [c.angleLabel, c])
+  // Match copy results to creative rows by creativeIndex (1-based) so each
+  // creative gets its own copy even if the AI repeats an angleLabel.
+  const copyByIndex = new Map(
+    result.creatives.map((c) => [c.creativeIndex, c])
   );
 
   for (const row of creativeRows) {
-    const angleLabel = row.ad_angles?.angle_label;
-    const copy = angleLabel ? copyMap.get(angleLabel) : undefined;
+    const copy = copyByIndex.get(row.creative_index);
     if (copy) {
       const { error: updateError } = await supabase
         .from("ad_creatives")
@@ -197,7 +209,9 @@ export async function POST() {
     sessionId: session.id,
     creativeId: c.id,
     concept: c.concept,
-    prompt: `Professional product ad image for: ${c.concept}. Clean, modern, high-converting social media ad creative.`,
+    prompt: buildImagePrompt(c.concept, c.placement, c.aspect_ratio, c.image_text),
+    aspectRatio: c.aspect_ratio ?? "1:1",
+    productImageUrl,
   }));
 
   await enqueueImageJobs(imageJobs);
@@ -210,8 +224,8 @@ export async function POST() {
   }
 
   const creatives = creativeRows.map((c) => {
+    const copy = copyByIndex.get(c.creative_index);
     const label = c.ad_angles?.angle_label;
-    const copy = label ? copyMap.get(label) : undefined;
     return {
       id: c.id,
       angleLabel: label ?? ("" as AngleLabel),
@@ -228,4 +242,67 @@ export async function POST() {
   };
 
   return NextResponse.json(response, { status: 200 });
+}
+function buildImagePrompt(
+  concept: string,
+  placement: string | null,
+  aspectRatio: AspectRatio | null,
+  imageText: string | null
+): string {
+  const platform = placement?.toLowerCase().includes("instagram")
+    ? "Instagram Feed static ad"
+    : "Meta Feed static ad";
+
+  const ratioCtx = aspectRatio
+    ? `Compose for a ${aspectRatio} aspect ratio.`
+    : "";
+
+  const textCtx = imageText
+    ? `Use this exact hook text as the main headline, large and readable: "${imageText}".`
+    : `Do not add random text. Leave clear empty space at the top for a headline overlay.`;
+
+  return [
+    `You are creating a performance marketing ${platform} creative for this ad concept: ${concept}`,
+    `⚠️ CRITICAL: The product must be exactly the same as in the provided product reference image.`,
+    `Do NOT change, replace, or modify the product in any way.`,
+    `Preserve the exact product identity, brand, shape, color, materials, and important details.`,
+    `If the product includes multiple items (e.g., phone case + lip tint tube), all items must appear exactly as in the reference.`,
+    `The product must be clearly visible and be the hero of the image.`,
+
+    ratioCtx,
+    `This must look like a high-converting DTC Meta ad, not just a lifestyle photo.`,
+    `Use a clear ad layout: big visual hook area, product as the star, emotional human moment, strong product-benefit connection.`,
+    textCtx,
+    `Composition rules:
+      - Product must be large and immediately recognizable, occupying 20-35% of the image.
+      - The viewer should understand what is being sold within 1 second.
+      - Use close-up framing, not a wide stock-photo scene.
+      - Show the product in use or as the obvious solution to the problem.
+      - Add visual emphasis around the product using lighting, depth of field, hand placement, or composition.
+      - Keep faces natural and believable.
+      - Avoid generic stock-photo aesthetics.
+      - Avoid tiny product placement.
+      - Avoid abstract backgrounds.
+      - Avoid decorative Pinterest-style imagery.
+      - Avoid fake UI buttons, logos, watermarks, or unreadable text.`,
+
+    `Output should feel like a polished paid social ad creative a media buyer would confidently launch on Meta Ads today.`,
+  ].join(" ");
+}
+
+async function resolveProductImageUrl(
+  productInput: ProductInput
+): Promise<string | null> {
+  // Uploaded product photo: generate a fresh signed URL for the private bucket.
+  if (productInput.image_storage_path) {
+    try {
+      return await getSignedImageUrl(PRODUCT_PHOTOS_BUCKET, productInput.image_storage_path);
+    } catch (err) {
+      console.error("creatives: failed to sign product photo:", err);
+      return null;
+    }
+  }
+
+  // URL input: the extractor should have found a public product image.
+  return productInput.extracted_image_url ?? null;
 }

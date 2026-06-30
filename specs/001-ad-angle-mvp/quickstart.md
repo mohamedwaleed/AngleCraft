@@ -34,7 +34,7 @@ NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=<your-stripe-publishable-key>
 
 ```text
 OPENAI_API_KEY=<your-openai-api-key>
-OPENAI_MODEL=gpt-4o-mini
+OPENAI_MODEL=gpt-4o
 ```
 
 Set production secrets via: `supabase secrets set --env-file ./supabase/.env`
@@ -224,8 +224,8 @@ pnpm exec supabase functions serve  # Edge Functions start without errors
   - A headline
   - Primary text
   - A call-to-action
-- Each creative is tied to one of the top three AI-selected ad angles.
-- Results page shows a testing plan with budget allocation, audience guidance, duration, and metrics for Meta and TikTok.
+- Each creative is tied to one of the top three selected ad angles.
+- Results page shows a testing plan with budget allocation, audience guidance, duration, and metrics for Meta Ads.
 - `payments` table has a row with status `succeeded`.
 - `sessions` table status is `complete`.
 - `ad_creatives` rows have `image_status = 'complete'` and `image_storage_path` set.
@@ -360,7 +360,7 @@ After running the validation scenarios above, verify:
 - [ ] `process-image-queue` Edge Function consumes queue and generates images.
 - [ ] Generated images are stored in Supabase Storage.
 - [ ] Results page shows 3 creatives with images (from Storage signed URLs).
-- [ ] Results page shows testing plan for Meta + TikTok.
+- [ ] Results page shows testing plan for Meta Ads.
 - [ ] Copy buttons work for all text artifacts.
 - [ ] PDF download includes all artifacts.
 - [ ] Session persists across page reloads.

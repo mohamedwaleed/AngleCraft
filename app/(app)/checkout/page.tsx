@@ -109,7 +109,7 @@ export default async function CheckoutPage({
             </h1>
             <p className="text-sm text-[#64748B] mb-6">
               Payment confirmed. We&apos;re now generating your full ad campaign
-              — three ready-to-run creatives plus a Meta/TikTok testing plan.
+              — three ready-to-run creatives plus a Meta Ads testing plan.
             </p>
             <div className="rounded-2xl border border-[#E2E8F0] bg-white p-5 shadow-sm">
               <p className="text-xs font-semibold uppercase tracking-wide text-[#94A3B8] mb-2">
@@ -132,7 +132,7 @@ export default async function CheckoutPage({
                   <span className="inline-flex size-5 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-[10px] font-bold text-indigo-600">
                     3
                   </span>
-                  A complete testing plan for Meta + TikTok.
+                  A complete testing plan for Meta Ads.
                 </li>
               </ul>
             </div>

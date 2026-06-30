@@ -145,7 +145,7 @@ export default async function StatusPage() {
                   <span className="inline-flex size-5 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-[10px] font-bold text-indigo-600">
                     2
                   </span>
-                  Pay $9 to unlock the full campaign.
+                  Pay $4.99 to generate the full campaign.
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="inline-flex size-5 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-[10px] font-bold text-indigo-600">

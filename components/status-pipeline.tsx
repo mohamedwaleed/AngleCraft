@@ -46,9 +46,11 @@ function statusForStep(
   current: SessionStatus,
   stepIndex: number,
   steps: PipelineStep[],
-  failed: string | null
+  failed: string | null,
+  completedAfterTrigger: string[]
 ): StepState {
   if (failed === step.id) return "failed";
+  if (completedAfterTrigger.includes(step.id)) return "complete";
   if (step.completeStatuses.includes(current)) return "complete";
   if (step.activeStatuses.includes(current)) return "in_progress";
 
@@ -79,13 +81,17 @@ export function StatusPipeline({
   const [status, setStatus] = useState<SessionStatus>(initialStatus);
   const [failedStep, setFailedStep] = useState<string | null>(null);
   const [triggering, setTriggering] = useState<string | null>(null);
+  const [completedAfterTrigger, setCompletedAfterTrigger] = useState<string[]>([]);
   const triggeredRef = useRef<Set<string>>(new Set());
 
   // Determine the currently-active step index.
+  // A step is no longer active once it has been marked complete after a
+  // successful endpoint trigger, even if the session status has not changed.
   const activeIndex = steps.findIndex(
     (s) =>
       s.activeStatuses.includes(status) &&
-      !s.completeStatuses.includes(status)
+      !s.completeStatuses.includes(status) &&
+      !completedAfterTrigger.includes(s.id)
   );
 
   // Trigger the active step's endpoint once. The triggering state is tracked
@@ -109,6 +115,14 @@ export function StatusPipeline({
         if (!res.ok) {
           const data = await res.json().catch(() => ({}));
           throw new Error(data?.error ?? `Request failed (${res.status})`);
+        }
+        // Mark this step as complete once its endpoint returned successfully.
+        // This lets the pipeline advance even when the session status does not
+        // change (e.g. creatives stay in "generating" while images generate async).
+        if (!cancelled) {
+          setCompletedAfterTrigger((prev) =>
+            prev.includes(step.id) ? prev : [...prev, step.id]
+          );
         }
         // Refresh status from the poll endpoint immediately.
         const pollRes = await fetch(pollEndpoint);
@@ -172,6 +186,7 @@ export function StatusPipeline({
     if (!step) return;
     setFailedStep(null);
     triggeredRef.current.delete(step.id);
+    setCompletedAfterTrigger((prev) => prev.filter((id) => id !== step.id));
     // Re-run the trigger effect by nudging status if needed.
     if (step.triggerEndpoint) {
       setTriggering(step.id);
@@ -196,7 +211,7 @@ export function StatusPipeline({
   const isComplete = pipelineComplete(steps, status);
   const progressValue = isComplete
     ? 100
-    : (steps.filter((s) => statusForStep(s, status, steps.indexOf(s), steps, failedStep) === "complete").length /
+    : (steps.filter((s) => statusForStep(s, status, steps.indexOf(s), steps, failedStep, completedAfterTrigger) === "complete").length /
         steps.length) *
       100;
 
@@ -223,7 +238,7 @@ export function StatusPipeline({
       {/* Steps */}
       <ol className="flex flex-col gap-3">
         {steps.map((step, i) => {
-          const state = statusForStep(step, status, i, steps, failedStep);
+          const state = statusForStep(step, status, i, steps, failedStep, completedAfterTrigger);
           const isTriggering = triggering === step.id;
           return (
             <li

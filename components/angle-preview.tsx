@@ -9,32 +9,54 @@ interface AngleItem {
   id: string;
   angleLabel: AngleLabel;
   hook: string;
+  rationale: string;
   score: number;
   isSelected: boolean;
 }
 
 const LABEL_DISPLAY: Record<AngleLabel, string> = {
+  pain_point: "Pain Point",
   convenience: "Convenience",
   time_saving: "Time Saving",
-  pain_point: "Pain Point",
-  healthy_lifestyle: "Healthy Lifestyle",
-  perfect_gift: "Perfect Gift",
+  gift: "Gift",
+  lifestyle: "Lifestyle",
+  emotional: "Emotional",
+  educational: "Educational",
+  social_proof: "Social Proof",
+  fear: "Fear",
+  aspiration: "Aspiration",
+  status: "Status",
+  transformation: "Transformation",
 };
 
 const LABEL_ACCENT: Record<AngleLabel, { bg: string; fg: string; border: string; iconBg: string; icon: string }> = {
+  pain_point: { bg: "bg-amber-50", fg: "text-amber-700", border: "border-amber-200", iconBg: "bg-amber-500", icon: "text-amber-500" },
   convenience: { bg: "bg-emerald-50", fg: "text-emerald-700", border: "border-emerald-200", iconBg: "bg-emerald-500", icon: "text-emerald-500" },
   time_saving: { bg: "bg-blue-50", fg: "text-blue-700", border: "border-blue-200", iconBg: "bg-blue-500", icon: "text-blue-500" },
-  pain_point: { bg: "bg-amber-50", fg: "text-amber-700", border: "border-amber-200", iconBg: "bg-amber-500", icon: "text-amber-500" },
-  healthy_lifestyle: { bg: "bg-violet-50", fg: "text-violet-700", border: "border-violet-200", iconBg: "bg-violet-500", icon: "text-violet-500" },
-  perfect_gift: { bg: "bg-rose-50", fg: "text-rose-700", border: "border-rose-200", iconBg: "bg-rose-500", icon: "text-rose-500" },
+  gift: { bg: "bg-rose-50", fg: "text-rose-700", border: "border-rose-200", iconBg: "bg-rose-500", icon: "text-rose-500" },
+  lifestyle: { bg: "bg-violet-50", fg: "text-violet-700", border: "border-violet-200", iconBg: "bg-violet-500", icon: "text-violet-500" },
+  emotional: { bg: "bg-pink-50", fg: "text-pink-700", border: "border-pink-200", iconBg: "bg-pink-500", icon: "text-pink-500" },
+  educational: { bg: "bg-cyan-50", fg: "text-cyan-700", border: "border-cyan-200", iconBg: "bg-cyan-500", icon: "text-cyan-500" },
+  social_proof: { bg: "bg-teal-50", fg: "text-teal-700", border: "border-teal-200", iconBg: "bg-teal-500", icon: "text-teal-500" },
+  fear: { bg: "bg-red-50", fg: "text-red-700", border: "border-red-200", iconBg: "bg-red-500", icon: "text-red-500" },
+  aspiration: { bg: "bg-indigo-50", fg: "text-indigo-700", border: "border-indigo-200", iconBg: "bg-indigo-500", icon: "text-indigo-500" },
+  status: { bg: "bg-fuchsia-50", fg: "text-fuchsia-700", border: "border-fuchsia-200", iconBg: "bg-fuchsia-500", icon: "text-fuchsia-500" },
+  transformation: { bg: "bg-purple-50", fg: "text-purple-700", border: "border-purple-200", iconBg: "bg-purple-500", icon: "text-purple-500" },
 };
 
 const LABEL_ICON: Record<AngleLabel, string> = {
+  pain_point: "😫",
   convenience: "⚡",
   time_saving: "⏱️",
-  pain_point: "😫",
-  healthy_lifestyle: "❤️",
-  perfect_gift: "🎁",
+  gift: "🎁",
+  lifestyle: "🌿",
+  emotional: "❤️",
+  educational: "📚",
+  social_proof: "⭐",
+  fear: "⚠️",
+  aspiration: "✨",
+  status: "👑",
+  transformation: "🦋",
 };
 
 function CopyHookButton({ text }: { text: string }) {
@@ -91,10 +113,10 @@ export function AnglePreview({ angles, onRegenerate, onNext, regenerating, hideA
             className="text-xl sm:text-2xl font-bold text-[#0F172A]"
             style={{ fontFamily: "var(--font-space-grotesk), sans-serif" }}
           >
-            AI-Generated Ad Angles
+            Ad Angles
           </h2>
           <p className="text-sm text-[#64748B] mt-1">
-            Based on your product and market research.
+            Five angles ranked by purchase intent, audience reach, creative potential, and emotional strength.
           </p>
         </div>
         {!hideActions && onRegenerate && (
@@ -152,13 +174,20 @@ export function AnglePreview({ angles, onRegenerate, onNext, regenerating, hideA
                 &ldquo;{angle.hook}&rdquo;
               </p>
 
+              {/* Rationale */}
+              {angle.rationale && (
+                <p className="mt-3 text-xs text-[#64748B] leading-relaxed border-t border-slate-100 pt-2">
+                  <strong>Why:</strong> {angle.rationale}
+                </p>
+              )}
+
               {/* Footer */}
               <div className="mt-4 flex items-center justify-between gap-2">
                 <div className="flex items-center gap-1.5">
                   <Trophy className={cn("size-3.5", accent.icon)} />
                   <span className="text-xs font-bold text-[#64748B]">
                     {angle.score}
-                    <span className="text-[#94A3B8] font-medium">/100</span>
+                    <span className="text-[#94A3B8] font-medium">/10</span>
                   </span>
                 </div>
                 <CopyHookButton text={angle.hook} />
@@ -172,7 +201,7 @@ export function AnglePreview({ angles, onRegenerate, onNext, regenerating, hideA
       <div className="flex items-center gap-2 rounded-xl bg-indigo-50 border border-indigo-100 px-4 py-3 text-sm text-indigo-700">
         <Sparkles className="size-4 shrink-0" />
         <p>
-          The top 3 angles are marked as <strong>Selected for your full campaign</strong>. After payment, we&apos;ll generate 3 ad concepts and creatives based on these winners.
+          The top 3 angles are marked as <strong>Selected for your full campaign</strong>. After payment, we&apos;ll generate 3 ready-to-run ad creatives based on these winners.
         </p>
       </div>
 

@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Shared Supabase client helper for Supabase Edge Functions (Deno).
 // Uses the service-role key (auto-injected by the Supabase platform) to bypass
 // RLS. Used only by process-image-queue (the cron-triggered, self-contained

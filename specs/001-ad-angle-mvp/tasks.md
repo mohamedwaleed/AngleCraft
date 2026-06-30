@@ -83,17 +83,17 @@
 
 **Goal**: The system generates exactly five labeled ad angles (convenience, time saving, pain point, healthy lifestyle, perfect gift), each with one strong hook, and internally scores them to select the top three for paid creatives.
 
-**Independent Test**: Submit a product, watch the pipeline complete, verify exactly five labeled ad angles appear on the preview page, each with one hook. Verify top three are marked as selected in the database.
+**Independent Test**: Submit a product, watch the pipeline complete, verify exactly five priority ad angles appear on the preview page, each with one hook. Verify the angles were drawn from the 10-label candidate pool and that top three are marked as selected in the database.
 
 ### Implementation for User Story 2
 
-- [X] T027 [P] [US2] Create `generate-angles` Edge Function in `supabase/functions/generate-angles/index.ts` (AI-only: receives product context + buyer insights, calls OpenAI with AdAnglesSchema producing 5 angles with labels, hooks, scores; returns array — no DB writes)
-- [X] T028 [US2] Create `POST /api/angles` route handler in `app/api/angles/route.ts` (reads session by cookie; fetches product context + buyer insights from DB; invokes `generate-angles` Edge Function; inserts 5 `ad_angles` rows with hooks and scores; selects top 3 by score and marks `is_selected = true` (application logic); updates session status to `angles_generated`; returns angles array)
+- [X] T027 [P] [US2] Create `generate-angles` Edge Function in `supabase/functions/generate-angles/index.ts` (AI-only: receives product context + buyer insights, calls OpenAI with AdAnglesSchema producing 10 candidate angles with labels, hooks, and rationale; applies deterministic base scores + product-category boosts; selects top 5 priorities; returns array — no DB writes)
+- [X] T028 [US2] Create `POST /api/angles` route handler in `app/api/angles/route.ts` (reads session by cookie; fetches product context + buyer insights from DB; invokes `generate-angles` Edge Function; inserts 5 `ad_angles` rows with hooks and scores — the top 5 priorities from the 10 candidate pool; selects top 3 by score and marks `is_selected = true` (application logic); updates session status to `angles_generated`; returns angles array)
 - [X] T029 [P] [US2] Create `angle-preview.tsx` client component in `components/angle-preview.tsx` (receives 5 angles as props; renders each angle label + hook in a card; shows score badge; marks top 3 as "Selected for full campaign"; includes copy button per hook)
 - [X] T030 [US2] Update `app/(app)/preview/page.tsx` to fetch ad angles from DB and render `angle-preview.tsx` alongside `buyer-insights.tsx` (Server Component: reads angles by session_id, passes to client component)
 - [X] T031 [US2] Wire `/api/angles` into the status pipeline flow — update `app/(app)/status/page.tsx` and `status-pipeline.tsx` so the "Generating ad angles" step triggers `/api/angles` and navigates to `/preview` on completion
 
-**Checkpoint**: Five ad angles with hooks are generated and displayed on the preview page. Top three are selected in the database. Full pre-payment flow works end-to-end.
+**Checkpoint**: Five priority ad angles with hooks are generated and displayed on the preview page. The five priorities are selected from a fixed pool of 10 candidate labels using deterministic scoring. Top three are selected in the database. Full pre-payment flow works end-to-end.
 
 ---
 
@@ -145,16 +145,16 @@
 
 ## Phase 7: User Story 5 — Generate Testing Plan & Recommendations (Priority: P2)
 
-**Goal**: System generates a structured testing plan for Meta and TikTok with budget allocation, audience guidance, testing duration, and key metrics, referencing all five angles with emphasis on the top three.
+**Goal**: System generates a structured testing plan for Meta Ads with budget allocation, audience guidance, testing duration, and key metrics, referencing all five angles with emphasis on the top three.
 
-**Independent Test**: Complete payment and creatives, verify a structured testing plan is displayed covering budget, audience, duration, and metrics for Meta and TikTok, referencing all five angles.
+**Independent Test**: Complete payment and creatives, verify a structured testing plan is displayed covering budget, audience, duration, and metrics for Meta Ads, referencing all five angles.
 
 ### Implementation for User Story 5
 
-- [ ] T052 [P] [US5] Create `generate-testing-plan` Edge Function in `supabase/functions/generate-testing-plan/index.ts` (AI-only: receives product context + buyer insights + 5 angles + 3 creatives, calls OpenAI with TestingPlanSchema, returns structured plan — no DB writes)
-- [ ] T053 [US5] Create `POST /api/testing-plan` route handler in `app/api/testing-plan/route.ts` (verifies paid session; fetches angles + creatives + buyer insights from DB; invokes `generate-testing-plan` Edge Function; inserts `testing_plans` row; updates session status to `complete`; returns testing plan)
-- [ ] T054 [P] [US5] Create `testing-plan-view.tsx` client component in `components/testing-plan-view.tsx` (receives testing plan JSON as props; renders platforms, budget allocation table, audience guidance, testing duration, key metrics list, per-angle guidance; includes `copy-button.tsx` for plan text)
-- [ ] T055 [US5] Update `app/(app)/results/page.tsx` to fetch testing plan from DB and render `testing-plan-view.tsx` alongside creatives (Server Component: reads `testing_plans` by session_id, passes to client component)
+- [X] T052 [P] [US5] Create `generate-testing-plan` Edge Function in `supabase/functions/generate-testing-plan/index.ts` (AI-only: receives product context + buyer insights + 5 angles + 3 creatives, calls OpenAI with TestingPlanSchema, returns structured plan — no DB writes)
+- [X] T053 [US5] Create `POST /api/testing-plan` route handler in `app/api/testing-plan/route.ts` (verifies paid session; fetches angles + creatives + buyer insights from DB; invokes `generate-testing-plan` Edge Function; inserts `testing_plans` row; updates session status to `complete`; returns testing plan)
+- [X] T054 [P] [US5] Create `testing-plan-view.tsx` client component in `components/testing-plan-view.tsx` (receives testing plan JSON as props; renders platforms, budget allocation table, audience guidance, testing duration, key metrics list, per-angle guidance; includes `copy-button.tsx` for plan text)
+- [X] T055 [US5] Update `app/(app)/results/page.tsx` to fetch testing plan from DB and render `testing-plan-view.tsx` alongside creatives (Server Component: reads `testing_plans` by session_id, passes to client component)
 
 **Checkpoint**: Testing plan is generated and displayed on the results page. Full post-payment flow works end-to-end: concepts → creatives → testing plan → results page.
 
@@ -256,7 +256,7 @@ Task: "Create download-pdf-button.tsx client component in components/download-pd
 1. Complete Phase 1: Setup (install deps, init Supabase)
 2. Complete Phase 2: Foundational (migration, shared libs, Edge Function shared code)
 3. Complete Phase 3: User Story 1 (input → status pipeline → Buyer Insights preview)
-4. Complete Phase 4: User Story 2 (5 ad angles + hooks on preview page)
+4. Complete Phase 4: User Story 2 (5 priority ad angles + hooks on preview page, drawn from 10 candidate labels)
 5. **STOP and VALIDATE**: Test the full pre-payment flow end-to-end
    - Submit URL → status pipeline → preview with angles + Buyer Insights
    - Submit photo → same flow

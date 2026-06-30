@@ -9,6 +9,7 @@ import type {
   ProductInput,
   BuyerInsights,
   AngleLabel,
+  AspectRatio,
 } from "@/lib/types";
 
 export async function POST() {
@@ -35,19 +36,28 @@ export async function POST() {
   // If concepts already exist for this session, return them idempotently.
   const { data: existing } = await supabase
     .from("ad_creatives")
-    .select("id, angle_id, concept, ad_angles(angle_label)")
-    .eq("session_id", session.id);
+    .select("id, angle_id, creative_index, concept, placement, aspect_ratio, ad_angles(angle_label)")
+    .eq("session_id", session.id)
+    .order("creative_index", { ascending: true });
 
   if (existing && existing.length > 0) {
     const concepts = (existing as unknown as {
       id: string;
       angle_id: string;
+      creative_index: number;
       concept: string;
+      placement: string | null;
+      aspect_ratio: AspectRatio | null;
+      image_text: string | null;
       ad_angles: { angle_label: AngleLabel } | null;
     }[]).map((c) => ({
       angleId: c.angle_id,
+      creativeIndex: c.creative_index,
       angleLabel: c.ad_angles?.angle_label ?? ("" as AngleLabel),
       concept: c.concept,
+      placement: c.placement ?? "",
+      aspectRatio: c.aspect_ratio ?? "1:1",
+      imageText: c.image_text ?? undefined,
     }));
     const response: ConceptsResponse = {
       status: session.status as "paid" | "generating" | "complete",
@@ -148,20 +158,32 @@ export async function POST() {
     );
   }
 
-  // Match concepts to angle IDs by angleLabel.
-  const angleMap = new Map(selectedAngles.map((a) => [a.angleLabel, a.id]));
+  // Match concepts to angle IDs by creativeIndex (1-based) so each creative is
+  // tied to the correct selected angle even if the AI repeats an angleLabel.
+  const rows = result.concepts.map((c, i) => {
+    const creativeIndex = c.creativeIndex ?? i + 1;
+    const selectedAngle =
+      selectedAngles[creativeIndex - 1] ??
+      selectedAngles[i] ??
+      selectedAngles[0];
 
-  const rows = result.concepts.map((c) => ({
-    session_id: session.id,
-    angle_id: angleMap.get(c.angleLabel) ?? selectedAngles[0].id,
-    concept: c.concept,
-    image_status: "pending" as const,
-  }));
+    return {
+      session_id: session.id,
+      angle_id: selectedAngle.id,
+      creative_index: creativeIndex,
+      concept: `${c.visualStyle}: ${c.concept}`,
+      placement: c.placement,
+      aspect_ratio: c.aspectRatio,
+      image_text: c.imageText,
+      image_status: "pending" as const,
+    };
+  });
 
   const { data: inserted, error: insertError } = await supabase
     .from("ad_creatives")
     .insert(rows)
-    .select();
+    .select()
+    .order("creative_index", { ascending: true });
 
   if (insertError || !inserted) {
     console.error("concepts: insert failed:", insertError?.message);
@@ -182,13 +204,21 @@ export async function POST() {
   const savedConcepts = (inserted as unknown as {
     id: string;
     angle_id: string;
+    creative_index: number;
     concept: string;
+    placement: string | null;
+    aspect_ratio: AspectRatio | null;
+    image_text: string | null;
   }[]).map((c) => {
     const angle = selectedAngles.find((a) => a.id === c.angle_id);
     return {
       angleId: c.angle_id,
+      creativeIndex: c.creative_index,
       angleLabel: angle?.angleLabel ?? ("" as AngleLabel),
       concept: c.concept,
+      placement: c.placement ?? "",
+      aspectRatio: c.aspect_ratio ?? "1:1",
+      imageText: c.image_text ?? undefined,
     };
   });
 

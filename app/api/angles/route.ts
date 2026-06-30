@@ -32,12 +32,14 @@ export async function POST() {
       id: string;
       angle_label: AngleLabel;
       hook: string;
+      rationale: string | null;
       score: number | null;
       is_selected: boolean;
     }[]).map((a) => ({
       id: a.id,
       angleLabel: a.angle_label,
       hook: a.hook,
+      rationale: a.rationale ?? "",
       score: a.score ?? 0,
       isSelected: a.is_selected,
     }));
@@ -116,6 +118,7 @@ export async function POST() {
     session_id: session.id,
     angle_label: a.angleLabel,
     hook: a.hook,
+    rationale: a.rationale,
     score: a.score,
     is_selected: selectedLabels.has(a.angleLabel),
   }));
@@ -145,12 +148,14 @@ export async function POST() {
     id: string;
     angle_label: AngleLabel;
     hook: string;
+    rationale: string | null;
     score: number | null;
     is_selected: boolean;
   }[]).map((a) => ({
     id: a.id,
     angleLabel: a.angle_label,
     hook: a.hook,
+    rationale: a.rationale ?? "",
     score: a.score ?? 0,
     isSelected: a.is_selected,
   }));

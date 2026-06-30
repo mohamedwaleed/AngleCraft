@@ -55,7 +55,7 @@ export async function POST(request: Request) {
       session_id: session.id,
       stripe_session_id: id,
       status: "pending",
-      amount: 900,
+      amount: 499,
       currency: "usd",
     });
 

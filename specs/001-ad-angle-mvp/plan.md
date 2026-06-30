@@ -7,11 +7,12 @@
 ## Summary
 
 AngleCraft is an AI Creative Strategist that takes a product URL or photo,
-analyzes the product, generates five ad angles with hooks and Buyer Insights
-(free preview), then — after a $9 one-time Stripe payment — generates three
-ready-to-run ad creatives (image + headline + primary text + CTA) based on the
-top three AI-selected angles, plus a Meta/TikTok testing plan. The entire flow
-is session-based (no auth) with a 7-day TTL.
+analyzes the product, generates a fixed pool of 10 candidate ad angles with
+hooks and scores them deterministically, returns the top 5 priority angles
+with Buyer Insights (free preview), then — after a $9 one-time Stripe payment —
+generates three ready-to-run ad creatives (image + headline + primary text +
+CTA) based on the top three selected angles, plus a Meta Ads testing plan. The
+entire flow is session-based (no auth) with a 7-day TTL.
 
 The MVP is built on the existing Next.js 16 App Router scaffold, leveraging
 Supabase-native features throughout: **Supabase Migrations** for schema
@@ -155,8 +156,7 @@ app/
 │   ├── chat/route.ts             # Existing chat endpoint (retained)
 │   ├── extract/route.ts          # POST: extract product info from URL or photo (cheerio)
 │   ├── analyze/route.ts          # POST: invoke edge function → Buyer Insights
-│   ├── angles/route.ts           # POST: invoke edge function → 5 ad angles + hooks
-│   ├── select-angles/route.ts    # POST: invoke edge function → score + select top 3
+│   ├── angles/route.ts           # POST: invoke edge function → 10 candidate angles, score, return top 5 priorities
 │   ├── concepts/route.ts         # POST: invoke edge function → 3 ad concepts (paid)
 │   ├── creatives/route.ts        # POST: enqueue image gen jobs + invoke edge function for copy (paid)
 │   ├── testing-plan/route.ts     # POST: invoke edge function → testing plan (paid)
@@ -209,7 +209,7 @@ supabase/                         # Supabase CLI project (NEW)
 ├── functions/
 │   ├── analyze-product/          # Edge Function (AI-only): product context + Buyer Insights
 │   │   └── index.ts
-│   ├── generate-angles/          # Edge Function (AI-only): 5 ad angles + hooks + scoring
+│   ├── generate-angles/          # Edge Function (AI-only): 10 candidate angles + hooks + deterministic scoring + top-5 selection
 │   │   └── index.ts
 │   ├── generate-concepts/        # Edge Function (AI-only): 3 ad concepts (paid)
 │   │   └── index.ts

@@ -1,7 +1,8 @@
+// @ts-nocheck
 // Edge Function: process-image-queue
 // Cron-triggered, self-contained queue consumer for image generation jobs.
 // Reads up to 3 messages from the `image_generation` pgmq queue, calls
-// OpenAI gpt-image-1 for each, uploads the result to Supabase Storage
+// OpenAI gpt-image-2 (or gpt-image-1) for each, uploads the result to Supabase Storage
 // (`ad-creatives` bucket), and updates the `ad_creatives` row.
 //
 // This is the only Edge Function that writes to the database and Storage
@@ -20,12 +21,42 @@ interface ImageJobMessage {
   creativeId: string;
   concept: string;
   prompt: string;
+  aspectRatio?: string;
+  productImageUrl: string;
 }
 
 interface QueueMessage {
   msg_id: number;
   read_ct: number;
   message: ImageJobMessage;
+}
+
+async function generateImageWithReference(
+  openAiKey: string,
+  model: string,
+  size: string,
+  prompt: string,
+  referenceImageUrl: string
+): Promise<Response> {
+  const refFetch = await fetch(referenceImageUrl);
+  if (!refFetch.ok) {
+    throw new Error(`Failed to download reference image (${refFetch.status}): ${referenceImageUrl}`);
+  }
+  const refBytes = new Uint8Array(await refFetch.arrayBuffer());
+  const contentType = refFetch.headers.get("content-type") || "image/png";
+
+  const form = new FormData();
+  form.append("model", model);
+  form.append("prompt", prompt);
+  form.append("n", "1");
+  form.append("size", size);
+  form.append("image", new Blob([refBytes], { type: contentType }), "reference.png");
+
+  return fetch("https://api.openai.com/v1/images/edits", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${openAiKey}` },
+    body: form,
+  });
 }
 
 Deno.serve(async (_req: Request) => {
@@ -76,19 +107,25 @@ Deno.serve(async (_req: Request) => {
           throw new Error("OPENAI_API_KEY is not set");
         }
 
-        const imageResponse = await fetch("https://api.openai.com/v1/images/generations", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${openAiKey}`,
-          },
-          body: JSON.stringify({
-            model: Deno.env.get("OPENAI_IMAGE_MODEL") || "gpt-image-1",
-            prompt: job.prompt,
-            n: 1,
-            size: "1024x1024",
-          }),
-        });
+        // Map aspect ratio to a supported OpenAI image size.
+        // gpt-image-1 supports: 1024x1024, 1536x1024, 1024x1536, auto.
+        // 4:5 is not supported, so it falls back to the square 1:1 size.
+        const sizeMap: Record<string, string> = {
+          "1:1": "1024x1024",
+          "9:16": "1024x1536",
+          "16:9": "1536x1024",
+          "4:5": "1024x1024",
+        };
+        const imageSize = sizeMap[job.aspectRatio ?? "1:1"] ?? "1024x1024";
+
+        const imageModel = Deno.env.get("OPENAI_IMAGE_MODEL") || "gpt-image-2";
+        const imageResponse = await generateImageWithReference(
+          openAiKey,
+          imageModel,
+          imageSize,
+          job.prompt,
+          job.productImageUrl
+        );
 
         if (!imageResponse.ok) {
           const errText = await imageResponse.text().catch(() => "");

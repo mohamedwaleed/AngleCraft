@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { StatusPipeline, type PipelineStep } from "@/components/status-pipeline";
 import type { SessionStatus } from "@/lib/types";
+import { Clock } from "lucide-react";
 
 const POST_PAYMENT_STEPS: PipelineStep[] = [
   {
@@ -16,7 +17,7 @@ const POST_PAYMENT_STEPS: PipelineStep[] = [
   {
     id: "creatives",
     label: "Generating creatives",
-    description: "Writing copy and generating images for each concept.",
+    description: "Writing copy and queuing image generation for each concept.",
     activeStatuses: ["generating"],
     completeStatuses: ["complete"],
     triggerEndpoint: "/api/creatives",
@@ -24,7 +25,7 @@ const POST_PAYMENT_STEPS: PipelineStep[] = [
   {
     id: "testing-plan",
     label: "Building testing plan",
-    description: "Assembling a Meta/TikTok testing plan.",
+    description: "Assembling a Meta Ads testing plan.",
     activeStatuses: ["generating"],
     completeStatuses: ["complete"],
     triggerEndpoint: "/api/testing-plan",
@@ -37,9 +38,9 @@ interface PostPaymentPipelineProps {
 
 export function PostPaymentPipeline({ initialStatus }: PostPaymentPipelineProps) {
   const [imagesReady, setImagesReady] = useState(false);
-  const [pipelineKey] = useState(0);
+  const [currentStatus, setCurrentStatus] = useState<SessionStatus>(initialStatus);
 
-  // Poll for image generation completion.
+  // Poll for image generation completion so we can show a reassurance banner.
   useEffect(() => {
     let cancelled = false;
 
@@ -48,6 +49,9 @@ export function PostPaymentPipeline({ initialStatus }: PostPaymentPipelineProps)
         const res = await fetch("/api/session-status");
         if (!res.ok) return;
         const data = await res.json();
+        if (!cancelled && data?.status) {
+          setCurrentStatus(data.status as SessionStatus);
+        }
         const imageStatuses: string[] = data?.imageStatuses ?? [];
         if (
           imageStatuses.length > 0 &&
@@ -62,7 +66,6 @@ export function PostPaymentPipeline({ initialStatus }: PostPaymentPipelineProps)
       }
     };
 
-    // Poll immediately and then every 5s.
     void poll();
     const interval = setInterval(poll, 5000);
 
@@ -72,40 +75,33 @@ export function PostPaymentPipeline({ initialStatus }: PostPaymentPipelineProps)
     };
   }, []);
 
-  // If images are ready and we're in the generating phase, the creatives
-  // step is effectively done. The testing plan step can proceed.
-  // We force a remount of StatusPipeline when images become ready to
-  // re-evaluate the step states.
-  if (imagesReady) {
-    // Update steps so the creatives step is considered complete when images are ready.
-    const updatedSteps: PipelineStep[] = POST_PAYMENT_STEPS.map((step) => {
-      if (step.id === "creatives") {
-        return {
-          ...step,
-          // When images are ready, treat the generating status as "complete"
-          // for the creatives step, allowing the testing plan step to become active.
-          completeStatuses: ["generating", "complete"],
-        };
-      }
-      return step;
-    });
+  const isGeneratingImages =
+    currentStatus === "generating" ||
+    (currentStatus === "complete" && !imagesReady);
 
-    return (
+  return (
+    <div className="flex flex-col gap-4">
+      {isGeneratingImages && (
+        <div className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
+          <Clock className="size-5 shrink-0 text-amber-600 mt-0.5" />
+          <div>
+            <p className="text-sm font-semibold text-amber-800">
+              Creative images are still being generated
+            </p>
+            <p className="text-xs text-amber-700 mt-0.5">
+              Your copy and testing plan are ready. The ad images are generated
+              in the background and typically take 1-2 minutes per creative.
+              You can view your results now; the images will appear as soon as
+              they&apos;re ready.
+            </p>
+          </div>
+        </div>
+      )}
       <StatusPipeline
-        key={`images-ready-${pipelineKey}`}
-        steps={updatedSteps}
+        steps={POST_PAYMENT_STEPS}
         initialStatus={initialStatus}
         onCompleteHref="/results"
       />
-    );
-  }
-
-  return (
-    <StatusPipeline
-      key={`waiting-images-${pipelineKey}`}
-      steps={POST_PAYMENT_STEPS}
-      initialStatus={initialStatus}
-      onCompleteHref="/results"
-    />
+    </div>
   );
 }

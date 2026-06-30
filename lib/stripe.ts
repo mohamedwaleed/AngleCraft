@@ -37,7 +37,7 @@ export async function createCheckoutSession({
             name: "AngleCraft Full Campaign",
             description: "3 AI-generated ad creatives + testing plan",
           },
-          unit_amount: 900,
+          unit_amount: 499,
         },
         quantity: 1,
       },

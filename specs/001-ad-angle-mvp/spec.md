@@ -15,9 +15,9 @@
 - Q: After payment, does the user see a loading/status flow for generating concepts, creatives, and the testing plan, or do results appear instantly? → A: Show a second status flow with labeled steps ("Generating concepts", "Generating creatives", "Building testing plan") mirroring the pre-payment pipeline.
 - Q: How long should an anonymous session and its generated results remain accessible? → A: 7 days from session creation.
 - Q: How much product context should URL extraction capture — text only, text + main image, or full extraction with images and reviews? → A: Text + main product image (name, description, price, bullet points/features, plus the primary product image).
-- Q: Which ad platform(s) should the testing plan be written for? → A: Meta (Facebook/Instagram) and TikTok.
-- Q: What download/export format should be offered for the results, and are creatives also downloadable? → A: A single formatted PDF containing all artifacts (Buyer Insights, angles, hooks, selected concepts, creatives, testing plan), plus individual copy-to-clipboard for quick use.
-- Q: Align spec to the screenshot goal: 3 ad creatives, Buyer Insights, and full campaign with image + copy + CTA? → A: Yes. Keep 5 ad angles + hooks + Buyer Insights in free preview; AI selects top 3 angles; full campaign generates 3 ready-to-run creatives (image + primary text + headline + CTA) plus testing plan.
+- Q: Which ad platform(s) should the testing plan be written for? → A: Meta (Facebook/Instagram) only. TikTok was removed to optimize the MVP for one advertising workflow.
+- Q: What download/export format should be offered for the results, and are creatives also downloadable? → A: A single formatted PDF containing all artifacts (recommended first test, Customer Insights, angles, hooks, selected concepts, creatives, Testing Playbook, creative ranking summary, workflow), plus individual copy-to-clipboard for quick use.
+- Q: Align spec to the screenshot goal: 3 ad creatives, Buyer Insights, and full campaign with image + copy + CTA? → A: Yes. Keep 5 ad angles + hooks + Buyer Insights in free preview; the system generates 10 candidate angles and code selects top 3 for paid creatives; full campaign generates 3 ready-to-run creatives (image + primary text + headline + CTA) plus testing plan.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -87,15 +87,15 @@ angles with hooks plus a Buyer Insights section.
 ### User Story 2 - Generate Ad Angles & Hooks (Priority: P1)
 
 As the final step of the status pipeline (User Story 1), the system generates
-five distinct ad angles — convenience, time saving, pain point, healthy
-lifestyle, and perfect gift. Each ad angle is paired with exactly one strong
-hook (a single attention-grabbing opening line). When the "Generating ad angles"
-step completes, the user is navigated to the ad-angle preview showing the five
-angles with their hooks in a professional, full-width card grid. The preview
-also displays the user-facing stepper with the current milestone on **Get Ad
-Angles** and the upcoming **Get Your Ads** milestone. The system also internally
-scores the angles so the top three can be automatically selected for the paid
-full-campaign creatives.
+a fixed candidate pool of 10 ad angle labels and scores them deterministically.
+The top 5 priorities are paired with exactly one strong hook each (a single
+attention-grabbing opening line). When the "Generating ad angles" step completes,
+the user is navigated to the ad-angle preview showing the five priority angles
+with their hooks in a professional, full-width card grid. The preview also
+displays the user-facing stepper with the current milestone on **Get Ad Angles**
+and the upcoming **Get Your Ads** milestone. The system internally scores the
+angles so the top three can be automatically selected for the paid full-campaign
+creatives.
 
 **Why this priority**: The ad angles and hooks are the core creative output and
 the primary reason users come to AngleCraft. They are also the gating artifact
@@ -109,36 +109,37 @@ categories.
 **Acceptance Scenarios**:
 
 1. **Given** the "Analyzing product" step has completed, **When** the system
-   begins "Generating ad angles", **Then** it produces exactly five ad angles
-   labeled convenience, time saving, pain point, healthy lifestyle, and perfect
-   gift.
+   begins "Generating ad angles", **Then** it produces exactly five priority
+   ad angles drawn from the fixed 10-label candidate pool.
 2. **Given** the five generated ad angles, **When** they are displayed on the
    preview page, **Then** each angle is accompanied by exactly one strong hook.
 3. **Given** a product with limited context (e.g., a photo only), **When**
-   angles are generated, **Then** the system still produces five angles
-   appropriate to whatever context was available.
+   angles are generated, **Then** the system still produces five priority
+   angles appropriate to whatever context was available.
 4. **Given** the "Generating ad angles" step completes, **When** the user
    arrives at the preview, **Then** the five angles and hooks are visible in a
    responsive card grid with a "Regenerate Angles" action, and the Buyer
    Insights section is displayed as a styled research panel below the angles.
-5. **Given** the five generated ad angles, **When** the system scores them,
-   **Then** the top three angles are marked for the paid full-campaign
-   creatives.
+5. **Given** the five generated ad angles, **When** the system scores them
+   deterministically, **Then** the top three angles are marked for the paid
+   full-campaign creatives.
 
 ---
 
 ### User Story 3 - Pay to Unlock Full Output (Priority: P1)
 
-After viewing the five ad angles with hooks and the Buyer Insights section,
+After viewing the five ad angles with hooks and the Customer Insights section,
 the user is prompted to make a one-time payment via Stripe to unlock the full
 Campaign: three ready-to-run ad creatives, each based on one of the top three
-AI-selected ad angles. Each full creative includes a generated ad image, a
+selected ad angles. Each full creative includes a generated ad image, a
 headline, primary text, and a call-to-action. The deliverable also includes a
-testing plan. The user completes checkout on Stripe and returns to their session,
-where the system navigates them to a second status flow with three labeled steps
-— "Generating concepts", "Generating creatives", and "Building testing plan" —
-mirroring the pre-payment pipeline. When all three steps complete, the full
-unlocked outputs are displayed.
+Testing Playbook with a recommended first test, execution phases, testing
+intensity, a compact creative ranking summary, and a day-by-day workflow. The user
+completes checkout on Stripe and returns to their session, where the system
+navigates them to a second status flow with three labeled steps — "Generating
+concepts", "Generating creatives", and "Building testing plan" — mirroring the
+pre-payment pipeline. When all three steps complete, the full unlocked outputs are
+displayed.
 
 **Why this priority**: Payment gates the rest of the value and validates the
 business model. Without it the MVP cannot generate revenue.
@@ -150,9 +151,9 @@ same session.
 
 **Acceptance Scenarios**:
 
-1. **Given** the five ad angles with hooks and Buyer Insights have been
+1. **Given** the five ad angles with hooks and Customer Insights have been
    generated, **When** the user views the results, **Then** the three ready-to-run
-   ad creatives and the testing plan are clearly marked as locked behind a
+   ad creatives and the Testing Playbook are clearly marked as locked behind a
    one-time payment.
 2. **Given** the locked state, **When** the user clicks pay and completes
    Stripe checkout, **Then** the system records the successful payment against
@@ -163,7 +164,7 @@ same session.
 4. **Given** all three post-payment status steps complete, **When** the final
    step finishes, **Then** the system displays the three ready-to-run ad
    creatives (image + copy + CTA each) and the testing plan, organized by the
-   AI-selected ad angle, without requiring re-payment.
+   selected ad angle, without requiring re-payment.
 5. **Given** a failed or cancelled checkout, **When** the user returns,
    **Then** the outputs remain locked and the user is invited to retry
    payment.
@@ -186,14 +187,14 @@ complete, but it is the core paid value.
 
 **Independent Test**: Can be fully tested by completing payment and verifying
 that exactly three ad creatives are produced, each tied to one of the top three
-AI-selected ad angles, each with a generated image, headline, primary text, and
+selected ad angles, each with a generated image, headline, primary text, and
 call-to-action.
 
 **Acceptance Scenarios**:
 
 1. **Given** a paid session with five ad angles, **When** the user views the
    unlocked output, **Then** exactly three ad creatives are displayed, each tied
-   to one of the top three AI-selected ad angles.
+   to one of the top three selected ad angles.
 2. **Given** the displayed creatives, **When** the user reads each creative,
    **Then** it includes a generated ad image, a headline, primary text, and a
    call-to-action clearly labeled.
@@ -205,44 +206,53 @@ call-to-action.
    of that angle.
 5. **Given** the full unlocked outputs, **When** the user wants to keep or
    share everything, **Then** they can download a single formatted PDF
-   containing Buyer Insights, all angles, hooks, the three selected concepts,
-   the three creatives, and the testing plan.
+   containing the recommended first test, Customer Insights, all angles, hooks,
+   the three selected concepts, the three creatives, the Testing Playbook, the
+   creative ranking summary, and the day-by-day workflow.
 
 ---
 
-### User Story 5 - Generate Testing Plan & Recommendations (Priority: P2)
+### User Story 5 - Generate Testing Playbook & Recommendations (Priority: P2)
 
 As the final step of the post-payment status flow ("Building testing plan"),
-the system produces a testing plan: a structured recommendation for how the
-user should test the five ad angles against each other, with extra emphasis on
-the three AI-selected angles used for the ready-to-run creatives. The plan
-includes suggested budget allocation, audience guidance, testing duration, and
-which metrics to watch. The plan is presented alongside the creatives once the
-status flow completes so the user leaves with both the ads and a path to
-validate them.
+the system produces a Testing Playbook: a structured recommendation for how
+the user should validate the three selected creatives on Meta Ads. The
+playbook calls out a single recommended first test, explains why that creative
+won, lays out three execution phases, provides three budget-intensity options,
+shows a compact ranking summary for all three creatives, explains why the other
+creatives were not chosen first, and gives a day-by-day workflow. The playbook is
+presented alongside the creatives once the status flow completes so the user
+leaves with both the ads and a clear path to validate them.
 
-**Why this priority**: The testing plan differentiates AngleCraft from a plain
+**Why this priority**: The Testing Playbook differentiates AngleCraft from a plain
 copy generator and delivers the "creative strategist" promise. It is P2 because
 it follows the paid creatives but is essential to the MVP value proposition.
 
 **Independent Test**: Can be fully tested by completing payment and verifying a
-structured testing plan is produced that references the five generated angles
-and gives actionable testing guidance.
+structured Testing Playbook is produced that references the three selected
+creatives, names one recommended first test, and gives actionable execution steps.
 
 **Acceptance Scenarios**:
 
-1. **Given** a paid session with generated creatives, **When** the user views
-   the testing plan section, **Then** a structured plan is displayed covering
-   budget allocation, audience guidance, testing duration, and key metrics.
-2. **Given** the testing plan, **When** the user reads it, **Then** the plan
-   references all five generated ad angles and explains how to compare them,
-   with extra emphasis on the three AI-selected angles used for the creatives.
-3. **Given** the testing plan, **When** the user wants to keep it, **Then** the
-   plan can be copied to the clipboard individually or downloaded as part of
+1. **Given** a paid session with generated creatives, **When** the user views the
+   Testing Playbook section, **Then** it displays three execution phases (Phase
+   1 — first 3 days, Phase 2, Phase 3 — if needed), evaluation metrics, and
+   testing intensity options.
+2. **Given** the Testing Playbook, **When** the user reads the recommended first
+   test, **Then** it identifies one creative by index, explains why it should be
+   tested first, lists success signals, and describes the next steps.
+3. **Given** the Testing Playbook, **When** the user reads the creative ranking
+   summary, **Then** it shows a compact table with each creative's angle,
+   psychology, use case, and testing priority.
+4. **Given** the Testing Playbook, **When** the user reads the "Why This Creative
+   Won" section, **Then** it lists the four systematic reasons and emphasizes the
+   winner was selected by a fixed scoring framework, not AI judgment.
+5. **Given** the Testing Playbook, **When** the user reads the "How to Use This
+   Playbook" section, **Then** it includes Day 1, Day 4, and the three branches
+   (winner, loser, nothing works).
+6. **Given** the Testing Playbook, **When** the user wants to keep it, **Then** the
+   playbook can be copied to the clipboard individually or downloaded as part of
    the full PDF (see User Story 4).
-4. **Given** a user with no testing experience, **When** they read the plan,
-   **Then** the guidance is understandable without prior media-buying
-   knowledge.
 
 ---
 
@@ -255,8 +265,8 @@ and gives actionable testing guidance.
   product, or is an unsupported format? The system should return a friendly
   error and invite retry.
 - What happens when the product context is too sparse to differentiate all five
-  angles or derive Buyer Insights? The system should still produce five angles
-  and a Buyer Insights section, generalizing where needed, and note where context
+  angles or derive Customer Insights? The system should still produce five angles
+  and a Customer Insights section, generalizing where needed, and note where context
   was limited.
 - What happens when generation fails mid-way (e.g., the AI service is
   unavailable)? The system should preserve the session, mark the failing
@@ -298,8 +308,8 @@ and gives actionable testing guidance.
   outputs) across page reloads within the same browser session, for a minimum of
   7 days from session creation.
 - **FR-005e**: During the "Analyzing product" step, the system MUST generate
-  Buyer Insights for the product, including: buyer profile, main desire, pain
-  points, buying triggers, and objections.
+  Customer Insights for the product, including: target buyer, main pain, main
+  desire, main buying trigger, main objection, and most important buyer emotion.
 - **FR-005a**: After a URL or photo is submitted, the system MUST navigate the
   user to a dedicated status page that displays three sequential processing
   steps in order: "Extracting product information", "Analyzing product", and
@@ -312,14 +322,16 @@ and gives actionable testing guidance.
 - **FR-005d**: If a status step fails, the system MUST mark that step as failed
   and offer a retry that re-attempts from the failed step without losing
   progress from already-completed steps.
-- **FR-006**: System MUST generate exactly five ad angles labeled convenience,
-  time saving, pain point, healthy lifestyle, and perfect gift.
+- **FR-006**: System MUST generate a fixed pool of 10 candidate ad angles and
+  return the top 5 priority angles to the user, each drawn from the candidate
+  taxonomy (`pain_point`, `convenience`, `time_saving`, `gift`, `lifestyle`,
+  `emotional`, `educational`, `aspiration`, `transformation`, `social_proof`).
 - **FR-007**: System MUST pair each ad angle with exactly one strong hook.
-- **FR-008**: System MUST present the five angles, hooks, and Buyer Insights to
+- **FR-008**: System MUST present the five angles, hooks, and Customer Insights to
   the user before requiring payment.
 - **FR-009**: System MUST present a one-time Stripe payment option to unlock
-  the remaining outputs (three ready-to-run ad creatives and testing plan) after
-  angles, hooks, and Buyer Insights are shown.
+  the remaining outputs (three ready-to-run ad creatives and Testing Playbook) after
+  angles, hooks, and Customer Insights are shown.
 - **FR-010**: System MUST integrate with Stripe for one-time checkout and
   record the payment status against the session.
 - **FR-011**: System MUST unlock the remaining outputs only after a confirmed
@@ -332,15 +344,16 @@ and gives actionable testing guidance.
   marker to the next step as each one finishes.
 - **FR-011c**: When all three post-payment status steps complete, the system
   MUST display the three ready-to-run ad creatives (image + copy + CTA) and the
-  testing plan, organized by the AI-selected ad angle.
+  Testing Playbook, organized by testing priority.
 - **FR-011d**: If a post-payment status step fails, the system MUST mark that
   step as failed and offer a retry that re-attempts from the failed step without
   losing prior progress or requiring re-payment.
 - **FR-012**: System MUST prevent duplicate charges for the same session.
-- **FR-013**: System MUST internally score the five ad angles and select the top
+- **FR-013**: System MUST internally score the ten candidate ad angles using
+  deterministic base scores and product-category boosts, then select the top
   three for the paid full-campaign creatives.
 - **FR-013a**: System MUST generate exactly one ad concept for each of the top
-  three AI-selected ad angles (three concepts total).
+  three selected ad angles (three concepts total).
 - **FR-014**: System MUST generate, for each selected ad concept, a ready-to-run
   ad creative consisting of a generated ad image, a primary text block, a
   headline, and a call-to-action.
@@ -349,16 +362,28 @@ and gives actionable testing guidance.
 - **FR-016**: System MUST allow the user to copy individual primary texts,
   headlines, and calls-to-action to the clipboard.
 - **FR-016a**: System MUST allow the user to download a single formatted PDF
-  containing all generated artifacts — Buyer Insights, the five ad angles with
-  hooks, the three selected ad concepts with their ad creatives, and the testing
-  plan.
-- **FR-017**: System MUST generate a testing plan that includes budget
-  allocation, audience guidance, testing duration, and key metrics to watch,
-  tailored to Meta (Facebook/Instagram) and TikTok as the target ad platforms.
-- **FR-018**: System MUST make the testing plan reference all five generated ad
-  angles, with extra emphasis on the three AI-selected angles used for the
-  creatives.
-- **FR-019**: System MUST allow the testing plan to be copied to the clipboard
+  containing all generated artifacts — the recommended first test, Customer
+  Insights, the five ad angles with hooks, the three selected ad concepts with
+  their ad creatives, the Testing Playbook, the creative ranking summary, and the
+  day-by-day workflow.
+- **FR-017**: System MUST generate a Testing Playbook that includes a
+  recommended first test, Customer Insights, three execution phases, evaluation
+  metrics, testing intensity (budget tiers), a compact creative ranking summary,
+  why the other creatives were not chosen first, a day-by-day workflow, and a
+  disclaimer, tailored to Meta (Facebook/Instagram) as the target ad platform.
+  TikTok is not included in the MVP.
+- **FR-017a**: The Testing Playbook MUST include deterministic benchmark-based
+  success criteria (Purchases goal, CTR good/average/poor thresholds, CPC
+  good/average/poor thresholds, Cost Per Purchase goal), a calculated target
+  CPA based on the extracted product price (sellingPrice × 0.35), and explicit
+  decision rules for scaling (20–30% budget increase) or pausing after 3 days.
+  These values are set in code, not by the AI. If the product price is
+  unavailable, the target CPA field MUST display a clear fallback explaining the
+  formula rather than a fabricated number.
+- **FR-018**: System MUST make the Testing Playbook reference the three selected
+  ad angles used for the creatives, with one called out as the recommended first
+  test.
+- **FR-019**: System MUST allow the Testing Playbook to be copied to the clipboard
   individually, in addition to being included in the full PDF download
   (FR-016a).
 - **FR-020**: System MUST show user-friendly error messages with retry options
@@ -375,7 +400,7 @@ and gives actionable testing guidance.
 
 - **Session**: An anonymous browser-bound workspace that owns one product
   input, the generated angles/hooks, the generated concepts/creatives, the
-  testing plan, and the payment status. Identified by a session token stored
+  Testing Playbook, and the payment status. Identified by a session token stored
   in the browser; not tied to a user account. A session and all its data
   expire and are purged 7 days after creation.
 - **Product Input**: The user-submitted product reference — either a URL or an
@@ -388,17 +413,19 @@ and gives actionable testing guidance.
   to a Session. Internally scored so the top three can be selected for the paid
   full-campaign creatives.
 - **Hook**: A single attention-grabbing opening line attached to an Ad Angle.
-- **Buyer Insights**: A free preview artifact derived from the product context.
-  Includes buyer profile, main desire, pain points, buying triggers, and
-  objections. Belongs to a Session.
-- **Ad Concept**: A creative execution of one of the top three AI-selected
+- **Customer Insights**: A free preview artifact derived from the product context.
+  Includes target buyer, main pain, main desire, main buying trigger, main
+  objection, and most important buyer emotion. Belongs to a Session.
+- **Ad Concept**: A creative execution of one of the top three selected
   Ad Angles. One per selected angle. Has one Ad Creative.
 - **Ad Creative**: A ready-to-run ad artifact for an Ad Concept — a generated
   ad Image, a Primary Text body, a Headline, and a Call-to-Action.
-- **Testing Plan**: A structured recommendation document tied to a Session,
-  covering budget allocation, audience guidance, duration, and metrics for
-  Meta (Facebook/Instagram) and TikTok, referencing the five Ad Angles with
-  extra emphasis on the three selected angles.
+- **Testing Playbook**: A structured recommendation document tied to a Session,
+  covering a recommended first test, three execution phases, evaluation metrics,
+  testing intensity (budget tiers), benchmark-based success criteria, a calculated
+  target CPA, a compact creative ranking summary, why the other creatives were
+  not chosen first, a day-by-day workflow, and a disclaimer, for Meta
+  (Facebook/Instagram) only.
 - **Payment**: A record of a one-time Stripe charge against a Session, with a
   status (pending, succeeded, failed) and a Stripe identifier. A Session has
   at most one succeeded Payment.
@@ -411,7 +438,7 @@ and gives actionable testing guidance.
   with hooks in under 2 minutes for a typical product.
 - **SC-002**: After completing payment, a user can view three ready-to-run ad
   creatives (each with image, primary text, headline, and CTA), plus the full
-  testing plan, in under 3 minutes total from initial input.
+  Testing Playbook, in under 3 minutes total from initial input.
 - **SC-003**: At least 90% of valid product URL submissions and valid product
   photo submissions result in successfully generated ad angles on the first
   attempt.
@@ -420,7 +447,7 @@ and gives actionable testing guidance.
   support.
 - **SC-005**: No user is charged more than once for the same session in 100% of
   cases.
-- **SC-006**: At least 80% of users surveyed agree the testing plan is
+- **SC-006**: At least 80% of users surveyed agree the Testing Playbook is
   actionable without prior media-buying experience.
 - **SC-007**: The system handles 50 concurrent anonymous generation sessions
   without noticeable degradation in response time.
@@ -444,7 +471,7 @@ and gives actionable testing guidance.
   not crawl galleries, reviews, or variant data in the MVP.
 - Product context extraction from photos relies on the image clearly showing a
   recognizable product; the MVP does not perform advanced computer-vision
-  scene understanding beyond what is needed to generate the five angles and Buyer
+  scene understanding beyond what is needed to generate the five angles and Customer
   Insights.
 - The three ready-to-run ad creatives include AI-generated ad images, but the
   MVP does not provide photo editing, custom brand asset uploads, or manual
@@ -462,8 +489,8 @@ and gives actionable testing guidance.
   subscriptions) for the MVP.
 - The testing plan is generated from the same product context and angles; it
   does not integrate with live ad platform APIs in the MVP. The plan is
-  tailored to Meta (Facebook/Instagram) and TikTok as the target platforms;
-  other platforms (Google Ads, LinkedIn, etc.) are out of scope for the MVP.
+  tailored to Meta (Facebook/Instagram) as the target platform;
+  other platforms (TikTok, Google Ads, LinkedIn, etc.) are out of scope for the MVP.
 - The existing scaffolded OpenAI helper and Supabase clients in the codebase
   will be reused for generation and session storage respectively, per the
   project conventions.

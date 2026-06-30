@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Shared OpenAI client helper for Supabase Edge Functions (Deno).
 // Uses npm:openai with structured outputs (Zod schemas via zodResponseFormat).
 // Pinned to a known-good version to avoid API surface changes on the runtime.
@@ -14,7 +15,7 @@ function getClient(): OpenAI {
   return new OpenAI({ apiKey });
 }
 
-export const DEFAULT_MODEL = Deno.env.get("OPENAI_MODEL") || "gpt-4o-mini";
+export const DEFAULT_MODEL = Deno.env.get("OPENAI_MODEL") || "gpt-4o";
 
 /**
  * Generate a structured response from OpenAI using a Zod schema.
