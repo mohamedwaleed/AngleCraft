@@ -4,6 +4,7 @@ import { useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { trackMetaEvent } from "@/lib/meta";
 import { ArrowRight, Upload, Link as LinkIcon, ImageIcon, Loader2 } from "lucide-react";
 
 type Mode = "url" | "photo";
@@ -105,6 +106,7 @@ export function ProductInput() {
         return;
       }
 
+      trackMetaEvent("Lead");
       router.push("/status");
     } catch (err) {
       console.error("extract submit failed:", err);

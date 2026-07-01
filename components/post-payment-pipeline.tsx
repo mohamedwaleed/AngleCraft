@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { StatusPipeline, type PipelineStep } from "@/components/status-pipeline";
+import { trackMetaEvent } from "@/lib/meta";
 import type { SessionStatus } from "@/lib/types";
 import { Clock } from "lucide-react";
 
@@ -39,6 +40,21 @@ interface PostPaymentPipelineProps {
 export function PostPaymentPipeline({ initialStatus }: PostPaymentPipelineProps) {
   const [imagesReady, setImagesReady] = useState(false);
   const [currentStatus, setCurrentStatus] = useState<SessionStatus>(initialStatus);
+  const purchaseTracked = useRef(false);
+
+  useEffect(() => {
+    if (
+      !purchaseTracked.current &&
+      (initialStatus === "paid" || initialStatus === "generating")
+    ) {
+      purchaseTracked.current = true;
+      trackMetaEvent("Purchase", {
+        value: 4.99,
+        currency: "USD",
+        content_type: "product",
+      });
+    }
+  }, [initialStatus]);
 
   // Poll for image generation completion so we can show a reassurance banner.
   useEffect(() => {
