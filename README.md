@@ -13,9 +13,9 @@ ready-to-run ad creatives (image + copy + CTA), and a structured Campaign Launch
    selects the top three using a deterministic scoring framework.
 4. **Generate creatives** — for each selected angle, creates a concept, headline,
    primary text, CTA, and AI-generated image.
-5. **Build the Campaign Launch Plan** — recommends a first test, lays out three
-   execution phases, budget intensity tiers, a creative ranking summary, and a
-   day-by-day workflow.
+5. **Build the Campaign Launch Plan** — recommends testing priorities, lays out a
+   unified testing setup for all three creatives, budget intensity tiers, a creative
+   strategy summary, and a day-by-day workflow.
 6. **Download** — export the full Campaign Launch Plan as a formatted PDF or copy individual
    pieces of copy to the clipboard.
 
@@ -30,7 +30,7 @@ unlocks:
 
 - 3 ready-to-run ad creatives (image + headline + copy + CTA)
 - The full Campaign Launch Plan with testing phases, budgets, and decision rules
-- A creative ranking summary with launch order
+- A creative strategy summary with testing roles
 - PDF export
 
 Payment is handled securely through Stripe. No subscription, no hidden fees.

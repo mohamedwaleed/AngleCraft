@@ -39,16 +39,23 @@ export const AngleLabelSchema = z.enum([
   "social_proof",
 ]);
 
-// AI returns angle labels (from the candidate taxonomy), hooks, and rationale
-// only. No criteria, no scores, no ranking — those are applied deterministically
+// AI returns rich buyer-psychology data for every predefined angle label. No
+// scores, rankings, or winner predictions — those are applied deterministically
 // in code.
 export const AdAnglesSchema = z.object({
   angles: z
     .array(
       z.object({
         angleLabel: AngleLabelSchema,
-        hook: z.string(),
+        angleName: z.string(),
+        buyerEmotion: z.string(),
+        purchaseMotivation: z.string(),
+        psychologicalTrigger: z.string(),
+        problemSolved: z.string(),
+        idealAudience: z.string(),
+        useCase: z.string(),
         rationale: z.string(),
+        exampleHook: z.string(),
       })
     )
     .length(10),
@@ -101,7 +108,6 @@ export const AngleCategorySchema = z.enum([
 export const TestingPlanSchema = z.object({
   platforms: z.array(z.string()).optional().default(["Meta Ads"]),
   campaignStrategy: z.object({
-    recommendedWinner: z.number().int().min(1).max(3),
     creativePriorities: z.array(z.number().int().min(1).max(3)).length(3),
     primaryPlatform: z.string(),
     primaryPlacement: z.string(),
@@ -116,30 +122,6 @@ export const TestingPlanSchema = z.object({
     mainBuyingTrigger: z.string(),
     mainObjection: z.string(),
     mostImportantBuyerEmotion: z.string(),
-  }),
-  recommendedFirstTest: z.object({
-    creativeIndex: z.number().int().min(1).max(3),
-    creativeName: z.string(),
-    why: z.string(),
-    expectedOutcome: z.string(),
-    selectionRationale: z.array(z.string()).min(1),
-    runOn: z.string(),
-  }),
-  actionPlan: z.object({
-    platform: z.string(),
-    campaignType: z.string(),
-    audienceStrategy: z.string(),
-    audienceExplanation: z.string(),
-    optimizationGoal: z.string(),
-    optimizationReason: z.string(),
-    firstCreative: z.string(),
-    budget: z.string(),
-    run: z.string(),
-    monitor: z.array(z.string()).min(1),
-    decision: z.string(),
-    // Legacy fields kept optional for backward compatibility with older plans.
-    campaign: z.string().optional(),
-    adSet: z.string().optional(),
   }),
   creativeStrategies: z.array(
     z.object({
@@ -160,25 +142,17 @@ export const TestingPlanSchema = z.object({
     fast: z.string(),
     explanation: z.string(),
   }),
-  testingPlan: z.object({
-    phase1: z.object({
-      create: z.array(z.string()),
-      upload: z.string(),
-      run: z.string(),
-      evaluate: z.array(z.string()),
-      decision: z.string(),
+  recommendedTestingSetup: z.object({
+    approach: z.string(),
+    campaignObjective: z.string(),
+    creatives: z.array(z.number().int().min(1).max(3)).min(1),
+    budget: z.object({
+      minimum: z.string(),
+      recommended: z.string(),
     }),
-    phase2: z.object({
-      pause: z.string(),
-      upload: z.string(),
-      run: z.string(),
-      evaluate: z.string(),
-    }),
-    phase3: z.object({
-      condition: z.string(),
-      upload: z.string(),
-      run: z.string(),
-    }),
+    runTime: z.string(),
+    monitor: z.array(z.string()).min(1),
+    afterTesting: z.array(z.string()).min(1),
   }),
   successCriteria: z.object({
     purchases: z.object({ goal: z.string() }),
@@ -192,18 +166,11 @@ export const TestingPlanSchema = z.object({
     recommendedMaximum: z.number(),
     formatted: z.string(),
   }),
-  whyNotOthers: z.array(
-    z.object({
-      creativeIndex: z.number().int().min(1).max(3),
-      reason: z.string(),
-    })
-  ).length(2),
-  whyWinner: z.array(z.string()).min(1),
   workflow: z.object({
     day1: z.string(),
     day4: z.string(),
-    ifWinner: z.string(),
-    ifLoser: z.string(),
+    ifPerforms: z.string(),
+    ifUnderperforms: z.string(),
     ifNone: z.string(),
   }),
   disclaimer: z.string(),

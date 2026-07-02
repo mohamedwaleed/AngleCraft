@@ -1,9 +1,10 @@
 // @ts-nocheck
 // Edge Function: generate-angles
-// The AI generates a fixed candidate pool of ten angle labels for every product
-// and only writes hooks and rationales. Scoring, ranking, and top-5 selection are
-// deterministic and computed in code from business rules and product-category
-// boosts. Returns the top 5 priorities — no DB writes, no Storage access.
+// The AI acts as a senior DTC creative strategist and returns rich buyer-
+// psychology data for every predefined angle label. Scoring, ranking, and
+// selection are deterministic and computed in code from business rules and
+// product-category boosts. Returns the top five scored angles — no DB writes, no
+// Storage access.
 
 import { generateStructured } from "../_shared/openai-client.ts";
 import { AdAnglesSchema, type AdAngles } from "../_shared/schemas.ts";
@@ -44,8 +45,9 @@ interface AngleCriteria {
   emotionalStrength: number;
 }
 
-// Fixed candidate pool of ten angle labels. The AI must generate a hook and
-// rationale for every label in this pool. The AI does not rank, score, or select.
+// Fixed candidate pool of ten angle labels. The AI must generate rich buyer-
+// psychology data for every label in this pool. The AI does not rank, score, or
+// select.
 const CANDIDATE_ANGLE_LABELS = [
   "pain_point",
   "convenience",
@@ -175,7 +177,11 @@ function applyBoosts(
 
 function selectTopAngles(scored: ScoredAngle[]): ScoredAngle[] {
   return [...scored]
-    .sort((a, b) => b.score - a.score || CANDIDATE_ANGLE_LABELS.indexOf(a.angleLabel) - CANDIDATE_ANGLE_LABELS.indexOf(b.angleLabel))
+    .sort(
+      (a, b) =>
+        b.score - a.score ||
+        CANDIDATE_ANGLE_LABELS.indexOf(a.angleLabel) - CANDIDATE_ANGLE_LABELS.indexOf(b.angleLabel)
+    )
     .slice(0, 5);
 }
 
@@ -209,12 +215,12 @@ Deno.serve(async (req: Request) => {
       {
         role: "system",
         content:
-          "You are an expert ad creative strategist.\n\nYou must generate ad angles using EXACTLY these ten candidate angle labels, in this exact order:\n\n1. pain_point\n2. convenience\n3. time_saving\n4. gift\n5. lifestyle\n6. emotional\n7. educational\n8. aspiration\n9. transformation\n10. social_proof\n\nDo not add, remove, rename, replace, reorder, score, rank, or rate the angles.\n\nFor each candidate angle, generate:\n\n* one strong hook\n* one brief rationale explaining why this angle works for this product\n\nReturn exactly ten angles in the same order.\n\nScoring, ranking, and top-5 selection are handled separately by the backend.",
+          "You are a senior DTC creative strategist.\n\nYour job is to build a buyer-psychology framework for every predefined ad angle. The backend will score and rank angles deterministically — you must NOT score, rank, prioritize, or predict winners.\n\nGenerate data for EXACTLY these ten angle labels, in this exact order:\n\n1. pain_point\n2. convenience\n3. time_saving\n4. gift\n5. lifestyle\n6. emotional\n7. educational\n8. aspiration\n9. transformation\n10. social_proof\n\nDo not add, remove, rename, replace, reorder, score, rank, or rate the angles.\n\nFor each angle, return:\n\n* angleLabel: the fixed taxonomy label\n* angleName: a human-readable title (e.g., Pain Point, Gift, Transformation)\n* buyerEmotion: the emotion the buyer experiences\n* purchaseMotivation: why somebody would actually buy\n* psychologicalTrigger: the psychological mechanism at play\n* problemSolved: the exact customer problem this angle addresses\n* idealAudience: who this angle works best for\n* useCase: where this angle should be tested\n* rationale: a short explanation of why the angle may resonate\n* exampleHook: ONE example headline demonstrating the angle (not final ad copy)\n\nWrite every field in plain language, specific to this product and its buyer. Avoid generic marketing fluff. Return exactly ten angles in the same order.\n\nScoring, ranking, and selection are handled separately by the backend.",
       },
       {
         role: "user",
         content:
-          `Product context:\n${JSON.stringify(body.productContext, null, 2)}\n\nBuyer insights:\n${JSON.stringify(body.buyerInsights, null, 2)}\n\nGenerate exactly ten ad angles using ONLY these labels and in this exact order:\n\n1. pain_point\n2. convenience\n3. time_saving\n4. gift\n5. lifestyle\n6. emotional\n7. educational\n8. aspiration\n9. transformation\n10. social_proof\n\nFor each angle return:\n\n* angleLabel\n* hook\n* rationale\n\nDo not include:\n\n* scores\n* rankings\n* priorities\n* alternative angle labels\n* additional angles`,
+          `Product context:\n${JSON.stringify(body.productContext, null, 2)}\n\nBuyer insights:\n${JSON.stringify(body.buyerInsights, null, 2)}\n\nGenerate exactly ten ad angles using ONLY these labels and in this exact order:\n\n1. pain_point\n2. convenience\n3. time_saving\n4. gift\n5. lifestyle\n6. emotional\n7. educational\n8. aspiration\n9. transformation\n10. social_proof\n\nFor each angle return:\n\n* angleLabel\n* angleName\n* buyerEmotion\n* purchaseMotivation\n* psychologicalTrigger\n* problemSolved\n* idealAudience\n* useCase\n* rationale\n* exampleHook\n\nDo not include:\n\n* scores\n* rankings\n* priorities\n* winners\n* probabilities\n* conversion estimates\n* alternative angle labels\n* additional angles`,
       },
     ]);
 

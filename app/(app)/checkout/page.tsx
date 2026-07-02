@@ -14,7 +14,7 @@ import { ArrowLeft } from "lucide-react";
 
 const STEPS: Step[] = [
   { id: "submit", number: 1, label: "Submit Product", description: "Enter your product URL" },
-  { id: "angles", number: 2, label: "Get Ad Angles", description: "AI finds winning angles" },
+  { id: "angles", number: 2, label: "Get Ad Angles", description: "AI finds high-priority angles" },
   { id: "ads", number: 3, label: "Get Your Ads", description: "Download your ad package" },
 ];
 

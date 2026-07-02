@@ -1,7 +1,7 @@
 // PDF document generation using @react-pdf/renderer.
-// Server-side only — renders a CampaignPDF document that includes the recommended
-// first test, customer insights, ready-to-test creatives, testing playbook, and
-// supporting sections without duplication.
+// Server-side only — renders a CampaignPDF document that includes testing priorities,
+// customer insights, ready-to-test creatives, testing playbook, and supporting sections
+// without duplication.
 
 import React from "react";
 import {
@@ -252,88 +252,23 @@ export function CampaignPDF({
           Your first Meta Ads testing sprint for {productName}
         </Text>
 
-        {/* Recommended First Test */}
-        {testingPlan?.recommendedFirstTest && testingPlan?.campaignStrategy && (
-          <>
-            <Text style={styles.sectionTitle}>Recommended First Test</Text>
-            <View style={styles.card}>
-              <Text style={styles.cardTitle}>
-                Creative {testingPlan.campaignStrategy.recommendedWinner}: {testingPlan.recommendedFirstTest.creativeName}
-              </Text>
-              <Text style={styles.body}>
-                <Text style={styles.label}>Why this should be tested first: </Text>
-                {testingPlan.recommendedFirstTest.why}
-              </Text>
-              <Text style={styles.body}>
-                <Text style={styles.label}>Expected outcome: </Text>
-                {testingPlan.recommendedFirstTest.expectedOutcome}
-              </Text>
-              <Text style={styles.body}>
-                <Text style={styles.label}>Run on: </Text>
-                {testingPlan.recommendedFirstTest.runOn}
-              </Text>
-              <Text style={styles.label}>How Do I Know If This Is Working?</Text>
-              {testingPlan.successCriteria ? (
-                <>
-                  <Text style={styles.body}>
-                    <Text style={styles.label}>Purchases: </Text>
-                    {testingPlan.successCriteria.purchases.goal}
-                  </Text>
-                  <Text style={styles.body}>
-                    <Text style={styles.label}>Target CPA: </Text>
-                    {testingPlan.targetCpa
-                      ? `Recommended maximum ${testingPlan.targetCpa.formatted}`
-                      : "Below the calculated target CPA."}
-                  </Text>
-                  <Text style={styles.body}>
-                    <Text style={styles.label}>CTR: </Text>
-                    Good {testingPlan.successCriteria.ctr.good}, Average {testingPlan.successCriteria.ctr.average}, Poor {testingPlan.successCriteria.ctr.poor}
-                  </Text>
-                  <Text style={styles.body}>
-                    <Text style={styles.label}>CPC: </Text>
-                    Good {testingPlan.successCriteria.cpc.good}, Average {testingPlan.successCriteria.cpc.average}, Poor {testingPlan.successCriteria.cpc.poor}
-                  </Text>
-                  <Text style={styles.body}>
-                    <Text style={styles.label}>Scale / Pause: </Text>
-                    {testingPlan.successCriteria.decisionRules.condition}. {testingPlan.successCriteria.decisionRules.action}
-                  </Text>
-                </>
-              ) : (
-                <>
-                  <Text style={styles.body}>Primary KPI: Purchases — The ultimate goal is identifying which creative drives purchase intent.</Text>
-                  <Text style={styles.body}>Secondary KPI: Cost Per Purchase — Lower cost per purchase indicates stronger market resonance.</Text>
-                  <Text style={styles.body}>Supporting KPI: CTR — Higher CTR indicates stronger creative engagement.</Text>
-                </>
-              )}
-              {testingPlan.recommendedFirstTest.selectionRationale && testingPlan.recommendedFirstTest.selectionRationale.length > 0 && (
-                <>
-                  <Text style={styles.label}>Why this was selected</Text>
-                  {testingPlan.recommendedFirstTest.selectionRationale.map((item, i) => (
-                    <Text key={i} style={styles.listItem}>
-                      {"\u2022"} {item}
-                    </Text>
-                  ))}
-                </>
-              )}
-              <Text style={styles.label}>What to do next</Text>
-              {[
-                "Open Meta Ads Manager.",
-                "Create one Sales campaign.",
-                "Create one broad ad set.",
-                `Upload Creative #${testingPlan.campaignStrategy.recommendedWinner} (the recommended creative above).`,
-                "Set your daily budget and run for 3 days.",
-                "Return to this report and compare results.",
-              ].map((step, i) => (
-                <Text key={i} style={styles.listItem}>
-                  {i + 1}. {step}
-                </Text>
-              ))}
-            </View>
-          </>
-        )}
+        {/* Campaign Launch Plan */}
+        <Text style={styles.sectionTitle}>Campaign Launch Plan</Text>
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>{productName}</Text>
+          <Text style={styles.body}>
+            <Text style={styles.label}>Platform: </Text>Meta Ads
+          </Text>
+          <Text style={styles.body}>
+            <Text style={styles.label}>Primary Placement: </Text>Meta Feed
+          </Text>
+          <Text style={styles.body}>
+            <Text style={styles.label}>Can also be tested on: </Text>Instagram Feed
+          </Text>
+        </View>
 
         {/* Customer Insights */}
-        <Text style={styles.sectionTitle}>Customer Insights</Text>
+        <Text style={styles.subSectionTitle}>Customer Insights</Text>
         {insights ? (
           <View style={styles.card}>
             <Text style={styles.body}>
@@ -391,6 +326,36 @@ export function CampaignPDF({
             {"\u2022"} {o}
           </Text>
         ))}
+
+        {/* Success Metrics */}
+        {testingPlan?.successCriteria && (
+          <>
+            <Text style={styles.subSectionTitle}>Success Metrics</Text>
+            <View style={styles.card}>
+              <SuccessCriteriaPdf
+                criteria={testingPlan.successCriteria}
+                targetCpa={testingPlan.targetCpa}
+              />
+            </View>
+          </>
+        )}
+
+        {/* What to do next */}
+        <Text style={styles.subSectionTitle}>What to do next</Text>
+        <View style={styles.card}>
+          {[
+            "Open Meta Ads Manager.",
+            "Create one Sales campaign.",
+            "Create one broad ad set.",
+            "Upload all three creatives (Creative #1, Creative #2, Creative #3).",
+            "Set your daily budget and run for at least 3 days.",
+            "Return to this report and compare results.",
+          ].map((step, i) => (
+            <Text key={i} style={styles.listItem}>
+              {i + 1}. {step}
+            </Text>
+          ))}
+        </View>
 
         {/* Ad Angles */}
         <Text style={styles.sectionTitle}>Ad Angles &amp; Hooks</Text>
@@ -462,7 +427,12 @@ export function CampaignPDF({
                     )}
                   </Text>
                   <Text style={styles.body}>
-                    <Text style={styles.label}>Testing Priority: </Text>#{strategy.testingPriority}
+                    <Text style={styles.label}>Testing Role: </Text>
+                    {strategy.testingPriority === 1
+                      ? "Primary Test Angle"
+                      : strategy.testingPriority === 2
+                        ? "Secondary Test Angle"
+                        : "Exploration Angle"}
                   </Text>
                   <Text style={styles.body}>
                     <Text style={styles.label}>Best Use Case: </Text>{strategy.bestUseCase}
@@ -473,72 +443,38 @@ export function CampaignPDF({
           );
         })}
 
-        {/* Why This Creative Won */}
-        {testingPlan?.whyWinner && testingPlan.whyWinner.length > 0 && (
-          <>
-            <Text style={styles.sectionTitle}>Why This Creative Won</Text>
-            <View style={styles.card}>
-              <Text style={styles.body}>
-                The winner was selected systematically from a fixed scoring framework — not by AI judgment.
-              </Text>
-              {testingPlan.whyWinner.map((r, i) => (
-                <Text key={i} style={styles.body}>{"\u2713"} {r}</Text>
-              ))}
-            </View>
-          </>
-        )}
-
         <Text style={styles.footer}>Generated by AngleCraft</Text>
       </Page>
 
-      {/* Page 3 — Campaign Launch Plan */}
+      {/* Page 3 — Recommended Testing Setup & How To Execute */}
       {testingPlan && (
         <Page size="A4" style={styles.page}>
-          <Text style={styles.sectionTitle}>Campaign Launch Plan</Text>
+          <Text style={styles.sectionTitle}>Recommended Testing Setup</Text>
 
-          <Text style={styles.subSectionTitle}>Testing Phases</Text>
           <View style={styles.card}>
-            <Text style={styles.cardTitle}>Phase 1 — First 3 Days</Text>
-            {testingPlan.testingPlan.phase1.create.map((step, i) => (
-              <Text key={i} style={styles.body}>{"\u2713"} {step}</Text>
+            <Text style={styles.body}>{testingPlan.recommendedTestingSetup.approach}</Text>
+            <Text style={styles.body}>
+              <Text style={styles.label}>Campaign Objective: </Text>{testingPlan.recommendedTestingSetup.campaignObjective}
+            </Text>
+            <Text style={styles.body}>
+              <Text style={styles.label}>Creatives: </Text>{testingPlan.recommendedTestingSetup.creatives.map((i) => `Creative #${i}`).join(", ")}
+            </Text>
+            <Text style={styles.body}>
+              <Text style={styles.label}>Minimum Budget: </Text>{testingPlan.recommendedTestingSetup.budget.minimum}
+            </Text>
+            <Text style={styles.body}>
+              <Text style={styles.label}>Recommended Budget: </Text>{testingPlan.recommendedTestingSetup.budget.recommended}
+            </Text>
+            <Text style={styles.body}>
+              <Text style={styles.label}>Run Time: </Text>{testingPlan.recommendedTestingSetup.runTime}
+            </Text>
+            <Text style={styles.body}>
+              <Text style={styles.label}>Monitor: </Text>{testingPlan.recommendedTestingSetup.monitor.join(", ")}
+            </Text>
+            <Text style={styles.label}>After testing:</Text>
+            {testingPlan.recommendedTestingSetup.afterTesting.map((step, i) => (
+              <Text key={i} style={styles.body}>{"\u2022"} {step}</Text>
             ))}
-            <Text style={styles.body}>
-              {"\u2713"} Upload {testingPlan.testingPlan.phase1.upload}
-            </Text>
-            <Text style={styles.body}>
-              {"\u2713"} Run: {testingPlan.testingPlan.phase1.run}
-            </Text>
-            <Text style={styles.body}>
-              Evaluate: {testingPlan.testingPlan.phase1.evaluate.join(", ")}
-            </Text>
-            <SuccessCriteriaPdf
-              criteria={testingPlan.successCriteria}
-              targetCpa={testingPlan.targetCpa}
-            />
-            <Text style={styles.body}>Decision: {testingPlan.testingPlan.phase1.decision}</Text>
-          </View>
-
-          <View style={styles.card}>
-            <Text style={styles.cardTitle}>Phase 2</Text>
-            <Text style={styles.body}>{"\u2713"} {testingPlan.testingPlan.phase2.pause}</Text>
-            <Text style={styles.body}>{"\u2713"} {testingPlan.testingPlan.phase2.upload}</Text>
-            <Text style={styles.body}>{"\u2713"} Run: {testingPlan.testingPlan.phase2.run}</Text>
-            <Text style={styles.body}>Evaluate: {testingPlan.testingPlan.phase2.evaluate}</Text>
-            <SuccessCriteriaPdf
-              criteria={testingPlan.successCriteria}
-              targetCpa={testingPlan.targetCpa}
-            />
-          </View>
-
-          <View style={styles.card}>
-            <Text style={styles.cardTitle}>Phase 3 — If Needed</Text>
-            <Text style={styles.body}>{testingPlan.testingPlan.phase3.condition}</Text>
-            <Text style={styles.body}>{"\u2713"} {testingPlan.testingPlan.phase3.upload}</Text>
-            <Text style={styles.body}>{"\u2713"} Run: {testingPlan.testingPlan.phase3.run}</Text>
-            <SuccessCriteriaPdf
-              criteria={testingPlan.successCriteria}
-              targetCpa={testingPlan.targetCpa}
-            />
           </View>
 
           {/* Testing Intensity */}
@@ -556,59 +492,18 @@ export function CampaignPDF({
             </Text>
           </View>
 
-          {/* Creative Ranking Summary */}
-          {testingPlan.creativeStrategies && testingPlan.creativeStrategies.length > 0 && (
-            <>
-              <Text style={styles.subSectionTitle}>Creative Ranking Summary</Text>
-              <View style={styles.table}>
-                <View style={styles.tableHeader}>
-                  <Text style={styles.tableCellHeader}>Creative</Text>
-                  <Text style={styles.tableCellHeader}>Angle</Text>
-                  <Text style={styles.tableCellHeader}>Psychology</Text>
-                  <Text style={styles.tableCellHeader}>Use Case</Text>
-                  <Text style={[styles.tableCellHeader, { width: 60, textAlign: "right" }]}>Priority</Text>
-                </View>
-                {testingPlan.creativeStrategies.map((s, i) => (
-                  <View
-                    key={s.creativeIndex}
-                    style={i === testingPlan.creativeStrategies.length - 1 ? styles.tableRowLast : styles.tableRow}
-                  >
-                    <Text style={styles.tableCell}>Creative #{s.creativeIndex}</Text>
-                    <Text style={styles.tableCell}>{s.angleCategory}</Text>
-                    <Text style={styles.tableCell}>{s.psychology}</Text>
-                    <Text style={styles.tableCell}>{s.bestUseCase}</Text>
-                    <Text style={styles.tableCellPriority}>#{s.testingPriority}</Text>
-                  </View>
-                ))}
-              </View>
-            </>
-          )}
-
-          {/* Why This Was Not Chosen First */}
-          {testingPlan.whyNotOthers && testingPlan.whyNotOthers.length > 0 && (
-            <>
-              <Text style={styles.subSectionTitle}>Why This Was Not Chosen First</Text>
-              {testingPlan.whyNotOthers.map((item, i) => (
-                <View key={i} style={styles.card}>
-                  <Text style={styles.label}>Creative #{item.creativeIndex}</Text>
-                  <Text style={styles.body}>{item.reason}</Text>
-                </View>
-              ))}
-            </>
-          )}
-
-          {/* How to Use This Campaign Launch Plan */}
+          {/* How To Execute */}
           {testingPlan.workflow && testingPlan.campaignStrategy && (
             <>
-              <Text style={styles.subSectionTitle}>How to Use This Campaign Launch Plan</Text>
+              <Text style={styles.subSectionTitle}>How To Execute</Text>
               <View style={styles.card}>
                 <Text style={styles.body}>Day 1: {testingPlan.workflow.day1}</Text>
                 <Text style={styles.body}>Day 4: {testingPlan.workflow.day4}</Text>
                 <Text style={styles.body}>
-                  If Creative #{testingPlan.campaignStrategy.recommendedWinner} wins: {testingPlan.workflow.ifWinner}
+                  If one creative outperforms: {testingPlan.workflow.ifPerforms}
                 </Text>
                 <Text style={styles.body}>
-                  If Creative #{testingPlan.campaignStrategy.recommendedWinner} loses: {testingPlan.workflow.ifLoser}
+                  If all creatives underperform: {testingPlan.workflow.ifUnderperforms}
                 </Text>
                 <Text style={styles.body}>
                   If none perform: {testingPlan.workflow.ifNone}
@@ -619,7 +514,9 @@ export function CampaignPDF({
 
           {/* Disclaimer */}
           <Text style={styles.subSectionTitle}>Disclaimer</Text>
-          <Text style={styles.body}>{testingPlan.disclaimer}</Text>
+          <Text style={styles.body}>
+            AngleCraft provides strategic creative testing recommendations based on buyer psychology and advertising best practices. Creative roles indicate testing strategy and exploration order, not guaranteed performance predictions.
+          </Text>
 
           <Text style={styles.footer}>Generated by AngleCraft</Text>
         </Page>

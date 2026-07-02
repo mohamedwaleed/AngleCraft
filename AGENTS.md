@@ -180,10 +180,11 @@ are enforced in code and must be preserved:
   `supabase/functions/_shared/schemas.ts` (`AngleLabelSchema`) and mirrored in
   `lib/types.ts` (`AngleLabel`).
 - **Master strategy object.** `generate-testing-plan` builds one
-  `campaignStrategy` (winner, priority order, platform, placement, metrics) and
+  `campaignStrategy` (testing role order, platform, placement, metrics) and
   derives every report section from it. Deterministic fields
-  (`campaignType`, `audienceStrategy`, `optimizationGoal`, `whyWinner`,
-  testing budgets, phase decisions) are force-overwritten in code after the AI
+  (`campaignType`, `audienceStrategy`, `optimizationGoal`,
+  `recommendedTestingSetup`, `testingIntensity`, `workflow`, `successCriteria`,
+  `targetCpa`, `disclaimer`) are force-overwritten in code after the AI
   returns, so no section can independently deviate.
 - **No generated campaign names.** Use the fixed `Campaign Type: Meta Sales
   Campaign` — never invent product-specific campaign names.
@@ -193,23 +194,20 @@ are enforced in code and must be preserved:
 - **Testing budgets** are three validation-speed tiers: Minimum ($20/day),
   Recommended ($50/day), Fast ($100/day), with a disclaimer that budgets should
   be adjusted to market, product pricing, and business goals.
-- **Testing decision logic** is three-branch: purchases at acceptable cost →
-  increase budget gradually; clicks but no purchases → test next creative;
-  performs poorly → pause and move to next creative.
+- **Testing decision logic** is three-branch: one creative outperforms →
+  increase budget on the strongest performer; all underperform → generate new
+  angles and retest; none perform → pause all and revisit angles.
 - **Benchmark success criteria** are deterministic and fixed in code, not AI:
   Purchases goal (≥1 during the test period), CTR thresholds (Good >1.5%,
   Average 0.8–1.5%, Poor <0.8%), CPC thresholds (Good <$1.00, Average $1–$2,
   Poor >$2), and Cost Per Purchase goal (below target CPA). The decision rule
-  after 3 days is: scale budget 20–30% if purchases ≥ 1, CTR > 1.5%, and CPC is
-  in the good or average range; otherwise pause and move to the next creative.
+  after 3 days is: scale budget 20–30% on the strongest performer if purchases ≥ 1,
+  CTR > 1.5%, and CPC is in the good or average range; otherwise pause the
+  weakest performer and generate new angles if none perform.
 - **Target CPA** is calculated from the extracted product price as
   `round(sellingPrice * 0.35)` (e.g., $50 → <$18). If the price is unavailable,
   the target CPA field shows a fallback message explaining the formula instead
   of a fabricated number.
-- **Why This Creative Won** section lists the four systematic reasons
-  (strongest purchase intent, broadest audience appeal, strong emotional
-  trigger, best visual storytelling opportunity) — reinforcing that the winner
-  was selected by code, not AI judgment.
 - **READY TO TEST badge** on creative cards clarifies that the images are final
   creatives to upload to Meta Ads Manager, not inspiration.
 - **`ad_angles.score` is `numeric(5,2)`** (not integer) to store decimal
@@ -221,22 +219,20 @@ are enforced in code and must be preserved:
   before the migration; new rows are assigned 1–3. See migration
   `20260629130000_add_creative_index_to_ad_creatives.sql`.
 - **Campaign Launch Plan information hierarchy.** The results page and PDF are organized in
-  a single, non-repeating flow: Recommended First Test → Customer Insights →
-  Ready To Test Creatives → Why This Creative Won → Campaign Launch Plan → Creative
-  Ranking Summary → Why This Was Not Chosen First → How To Use This Campaign Launch Plan →
-  Disclaimer. The "Action Plan" section was removed because its contents were
-  duplicated inside the Campaign Launch Plan and Recommended First Test.
-- **Creative Ranking Summary** is a compact table (Creative / Angle /
-  Psychology / Use Case / Priority) that replaces the previous large strategy
-  cards. The full creative details remain on the individual creative cards.
+  a single, non-repeating flow: Campaign Launch Plan (product summary, customer
+  insights, success metrics, what to do next) → Generated Creatives → Recommended Testing
+  Setup → How To Execute → Disclaimer. The report never claims a predicted winner.
+- **Creative roles, not rankings.** Creative cards show a testing role, not a
+  "#1/#2/#3" ranking. The three roles are Primary Test Angle, Secondary Test Angle,
+  and Exploration Angle. A note clarifies that roles indicate testing strategy and
+  exploration order, not guaranteed performance.
 - **Results page auto-refresh** while image generation is pending via
   `components/refresh-while-generating.tsx` so users see creatives as they
   complete without manual reload.
 - **Testing-plan idempotency** (`app/api/testing-plan/route.ts`): existing plans
-  are returned only if they have the new shape (`whyWinner`, `campaignType`,
-  `audienceStrategy`, `optimizationGoal`, `successCriteria`, `targetCpa`);
-  otherwise they are deleted and regenerated so users always see the updated
-  Campaign Launch Plan.
+  are returned only if they have the new shape (`recommendedTestingSetup`,
+  `creativeStrategies`, `successCriteria`, `targetCpa`); otherwise they are
+  deleted and regenerated so users always see the updated Campaign Launch Plan.
 
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,

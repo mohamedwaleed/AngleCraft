@@ -8,7 +8,14 @@ import { cn } from "@/lib/utils";
 interface AngleItem {
   id: string;
   angleLabel: AngleLabel;
-  hook: string;
+  angleName: string;
+  buyerEmotion: string;
+  purchaseMotivation: string;
+  psychologicalTrigger: string;
+  problemSolved: string;
+  idealAudience: string;
+  useCase: string;
+  exampleHook: string;
   rationale: string;
   score: number;
   isSelected: boolean;
@@ -29,19 +36,19 @@ const LABEL_DISPLAY: Record<AngleLabel, string> = {
   transformation: "Transformation",
 };
 
-const LABEL_ACCENT: Record<AngleLabel, { bg: string; fg: string; border: string; iconBg: string; icon: string }> = {
-  pain_point: { bg: "bg-amber-50", fg: "text-amber-700", border: "border-amber-200", iconBg: "bg-amber-500", icon: "text-amber-500" },
-  convenience: { bg: "bg-emerald-50", fg: "text-emerald-700", border: "border-emerald-200", iconBg: "bg-emerald-500", icon: "text-emerald-500" },
-  time_saving: { bg: "bg-blue-50", fg: "text-blue-700", border: "border-blue-200", iconBg: "bg-blue-500", icon: "text-blue-500" },
-  gift: { bg: "bg-rose-50", fg: "text-rose-700", border: "border-rose-200", iconBg: "bg-rose-500", icon: "text-rose-500" },
-  lifestyle: { bg: "bg-violet-50", fg: "text-violet-700", border: "border-violet-200", iconBg: "bg-violet-500", icon: "text-violet-500" },
-  emotional: { bg: "bg-pink-50", fg: "text-pink-700", border: "border-pink-200", iconBg: "bg-pink-500", icon: "text-pink-500" },
-  educational: { bg: "bg-cyan-50", fg: "text-cyan-700", border: "border-cyan-200", iconBg: "bg-cyan-500", icon: "text-cyan-500" },
-  social_proof: { bg: "bg-teal-50", fg: "text-teal-700", border: "border-teal-200", iconBg: "bg-teal-500", icon: "text-teal-500" },
-  fear: { bg: "bg-red-50", fg: "text-red-700", border: "border-red-200", iconBg: "bg-red-500", icon: "text-red-500" },
-  aspiration: { bg: "bg-indigo-50", fg: "text-indigo-700", border: "border-indigo-200", iconBg: "bg-indigo-500", icon: "text-indigo-500" },
-  status: { bg: "bg-fuchsia-50", fg: "text-fuchsia-700", border: "border-fuchsia-200", iconBg: "bg-fuchsia-500", icon: "text-fuchsia-500" },
-  transformation: { bg: "bg-purple-50", fg: "text-purple-700", border: "border-purple-200", iconBg: "bg-purple-500", icon: "text-purple-500" },
+const LABEL_ACCENT: Record<AngleLabel, { bg: string; fg: string; border: string; icon: string }> = {
+  pain_point: { bg: "bg-amber-50", fg: "text-amber-700", border: "border-amber-200", icon: "text-amber-500" },
+  convenience: { bg: "bg-emerald-50", fg: "text-emerald-700", border: "border-emerald-200", icon: "text-emerald-500" },
+  time_saving: { bg: "bg-blue-50", fg: "text-blue-700", border: "border-blue-200", icon: "text-blue-500" },
+  gift: { bg: "bg-rose-50", fg: "text-rose-700", border: "border-rose-200", icon: "text-rose-500" },
+  lifestyle: { bg: "bg-violet-50", fg: "text-violet-700", border: "border-violet-200", icon: "text-violet-500" },
+  emotional: { bg: "bg-pink-50", fg: "text-pink-700", border: "border-pink-200", icon: "text-pink-500" },
+  educational: { bg: "bg-cyan-50", fg: "text-cyan-700", border: "border-cyan-200", icon: "text-cyan-500" },
+  social_proof: { bg: "bg-teal-50", fg: "text-teal-700", border: "border-teal-200", icon: "text-teal-500" },
+  fear: { bg: "bg-red-50", fg: "text-red-700", border: "border-red-200", icon: "text-red-500" },
+  aspiration: { bg: "bg-indigo-50", fg: "text-indigo-700", border: "border-indigo-200", icon: "text-indigo-500" },
+  status: { bg: "bg-fuchsia-50", fg: "text-fuchsia-700", border: "border-fuchsia-200", icon: "text-fuchsia-500" },
+  transformation: { bg: "bg-purple-50", fg: "text-purple-700", border: "border-purple-200", icon: "text-purple-500" },
 };
 
 const LABEL_ICON: Record<AngleLabel, string> = {
@@ -93,6 +100,18 @@ function CopyHookButton({ text }: { text: string }) {
   );
 }
 
+function Field({ label, value }: { label: string; value: string }) {
+  if (!value) return null;
+  return (
+    <div>
+      <span className="text-[10px] font-semibold uppercase tracking-wide text-[#94A3B8]">
+        {label}
+      </span>
+      <p className="text-xs text-[#475569] leading-snug">{value}</p>
+    </div>
+  );
+}
+
 interface AnglePreviewProps {
   angles: AngleItem[];
   onRegenerate?: () => void;
@@ -116,7 +135,7 @@ export function AnglePreview({ angles, onRegenerate, onNext, regenerating, hideA
             Ad Angles
           </h2>
           <p className="text-sm text-[#64748B] mt-1">
-            Five angles ranked by purchase intent, audience reach, creative potential, and emotional strength.
+            Five predefined buyer-psychology angles, scored and ranked by purchase intent, audience reach, creative potential, and emotional strength.
           </p>
         </div>
         {!hideActions && onRegenerate && (
@@ -154,35 +173,62 @@ export function AnglePreview({ angles, onRegenerate, onNext, regenerating, hideA
                 {i + 1}
               </div>
 
-              {/* Icon */}
-              <div
-                className={cn(
-                  "mb-4 flex size-14 items-center justify-center rounded-2xl text-2xl",
-                  accent.bg
-                )}
-              >
-                {LABEL_ICON[angle.angleLabel]}
+              {angle.isSelected && (
+                <div className="absolute -top-3 right-4 rounded-full bg-emerald-500 px-2.5 py-0.5 text-[10px] font-bold text-white shadow-sm">
+                  Selected
+                </div>
+              )}
+
+              {/* Icon + title */}
+              <div className="flex items-start gap-3 mb-4">
+                <div
+                  className={cn(
+                    "flex size-12 shrink-0 items-center justify-center rounded-2xl text-2xl",
+                    accent.bg
+                  )}
+                >
+                  {LABEL_ICON[angle.angleLabel]}
+                </div>
+                <div>
+                  <h3 className={cn("text-base font-bold", accent.fg)}>
+                    {angle.angleName || LABEL_DISPLAY[angle.angleLabel]}
+                  </h3>
+                  <p className="text-xs text-[#94A3B8]">{LABEL_DISPLAY[angle.angleLabel]}</p>
+                </div>
               </div>
 
-              {/* Label */}
-              <h3 className={cn("text-base font-bold", accent.fg)}>
-                {LABEL_DISPLAY[angle.angleLabel]}
-              </h3>
+              {/* Example hook */}
+              <div className="mb-4 rounded-xl bg-slate-50 p-3">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-[10px] font-semibold uppercase tracking-wide text-[#94A3B8]">
+                    Example Hook
+                  </span>
+                  <CopyHookButton text={angle.exampleHook} />
+                </div>
+                <p className="text-sm font-semibold text-[#0F172A] leading-snug">
+                  &ldquo;{angle.exampleHook}&rdquo;
+                </p>
+              </div>
 
-              {/* Hook */}
-              <p className="mt-2 text-sm font-medium text-[#0F172A] leading-relaxed flex-1">
-                &ldquo;{angle.hook}&rdquo;
-              </p>
+              {/* Buyer psychology */}
+              <div className="space-y-2.5 mb-4">
+                <Field label="Buyer Emotion" value={angle.buyerEmotion} />
+                <Field label="Purchase Motivation" value={angle.purchaseMotivation} />
+                <Field label="Psychological Trigger" value={angle.psychologicalTrigger} />
+                <Field label="Problem Solved" value={angle.problemSolved} />
+                <Field label="Ideal Audience" value={angle.idealAudience} />
+                <Field label="Use Case" value={angle.useCase} />
+              </div>
 
               {/* Rationale */}
               {angle.rationale && (
-                <p className="mt-3 text-xs text-[#64748B] leading-relaxed border-t border-slate-100 pt-2">
-                  <strong>Why:</strong> {angle.rationale}
+                <p className="text-xs text-[#64748B] leading-relaxed border-t border-slate-100 pt-3 mb-4">
+                  <strong>Why it could work:</strong> {angle.rationale}
                 </p>
               )}
 
               {/* Footer */}
-              <div className="mt-4 flex items-center justify-between gap-2">
+              <div className="mt-auto flex items-center justify-between gap-2">
                 <div className="flex items-center gap-1.5">
                   <Trophy className={cn("size-3.5", accent.icon)} />
                   <span className="text-xs font-bold text-[#64748B]">
@@ -190,7 +236,6 @@ export function AnglePreview({ angles, onRegenerate, onNext, regenerating, hideA
                     <span className="text-[#94A3B8] font-medium">/10</span>
                   </span>
                 </div>
-                <CopyHookButton text={angle.hook} />
               </div>
             </div>
           );
@@ -201,7 +246,7 @@ export function AnglePreview({ angles, onRegenerate, onNext, regenerating, hideA
       <div className="flex items-center gap-2 rounded-xl bg-indigo-50 border border-indigo-100 px-4 py-3 text-sm text-indigo-700">
         <Sparkles className="size-4 shrink-0" />
         <p>
-          The top 3 angles are marked as <strong>Selected for your full campaign</strong>. After payment, we&apos;ll generate 3 ready-to-run ad creatives based on these winners.
+          The top 3 angles are marked as <strong>Selected for your full campaign</strong>. After payment, we&apos;ll generate 3 ready-to-run ad creatives based on these priority angles.
         </p>
       </div>
 

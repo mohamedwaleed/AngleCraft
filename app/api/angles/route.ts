@@ -31,6 +31,13 @@ export async function POST() {
     const angles = (existing as unknown as {
       id: string;
       angle_label: AngleLabel;
+      angle_name: string;
+      buyer_emotion: string;
+      purchase_motivation: string;
+      psychological_trigger: string;
+      problem_solved: string;
+      ideal_audience: string;
+      use_case: string;
       hook: string;
       rationale: string | null;
       score: number | null;
@@ -38,8 +45,15 @@ export async function POST() {
     }[]).map((a) => ({
       id: a.id,
       angleLabel: a.angle_label,
-      hook: a.hook,
+      angleName: a.angle_name,
+      buyerEmotion: a.buyer_emotion,
+      purchaseMotivation: a.purchase_motivation,
+      psychologicalTrigger: a.psychological_trigger,
+      problemSolved: a.problem_solved,
+      idealAudience: a.ideal_audience,
+      useCase: a.use_case,
       rationale: a.rationale ?? "",
+      exampleHook: a.hook,
       score: a.score ?? 0,
       isSelected: a.is_selected,
     }));
@@ -113,11 +127,18 @@ export async function POST() {
   const sorted = [...result.angles].sort((a, b) => b.score - a.score);
   const selectedLabels = new Set(sorted.slice(0, 3).map((a) => a.angleLabel));
 
-  // Insert 5 ad_angles rows.
+  // Insert top 5 ad_angles rows.
   const rows = result.angles.map((a) => ({
     session_id: session.id,
     angle_label: a.angleLabel,
-    hook: a.hook,
+    angle_name: a.angleName,
+    buyer_emotion: a.buyerEmotion,
+    purchase_motivation: a.purchaseMotivation,
+    psychological_trigger: a.psychologicalTrigger,
+    problem_solved: a.problemSolved,
+    ideal_audience: a.idealAudience,
+    use_case: a.useCase,
+    hook: a.exampleHook,
     rationale: a.rationale,
     score: a.score,
     is_selected: selectedLabels.has(a.angleLabel),
@@ -147,6 +168,13 @@ export async function POST() {
   const savedAngles = (inserted as unknown as {
     id: string;
     angle_label: AngleLabel;
+    angle_name: string;
+    buyer_emotion: string;
+    purchase_motivation: string;
+    psychological_trigger: string;
+    problem_solved: string;
+    ideal_audience: string;
+    use_case: string;
     hook: string;
     rationale: string | null;
     score: number | null;
@@ -154,8 +182,15 @@ export async function POST() {
   }[]).map((a) => ({
     id: a.id,
     angleLabel: a.angle_label,
-    hook: a.hook,
+    angleName: a.angle_name,
+    buyerEmotion: a.buyer_emotion,
+    purchaseMotivation: a.purchase_motivation,
+    psychologicalTrigger: a.psychological_trigger,
+    problemSolved: a.problem_solved,
+    idealAudience: a.ideal_audience,
+    useCase: a.use_case,
     rationale: a.rationale ?? "",
+    exampleHook: a.hook,
     score: a.score ?? 0,
     isSelected: a.is_selected,
   }));

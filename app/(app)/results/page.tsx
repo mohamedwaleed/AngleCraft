@@ -4,7 +4,6 @@ import { createClient } from "@/lib/supabase/server";
 import { getSessionFromCookie } from "@/lib/session";
 import { getSignedImageUrl } from "@/lib/storage";
 import { CreativeCard } from "@/components/creative-card";
-import { CreativeRankingTable } from "@/components/creative-ranking-table";
 import { DownloadCampaignButton } from "@/components/download-campaign-button";
 import { RefreshWhileGenerating } from "@/components/refresh-while-generating";
 import { TestingPlanView } from "@/components/testing-plan-view";
@@ -15,8 +14,9 @@ import type {
   TestingPlan,
   TestingPlanContent,
   AspectRatio,
+  ProductInput,
 } from "@/lib/types";
-import { ArrowLeft, Trophy, Target, CheckCircle2, TrendingUp } from "lucide-react";
+import { ArrowLeft, CheckCircle2, TrendingUp, Rocket } from "lucide-react";
 
 interface CreativeData {
   id: string;
@@ -35,7 +35,7 @@ interface CreativeData {
 
 const STEPS: Step[] = [
   { id: "submit", number: 1, label: "Submit Product", description: "Enter your product URL" },
-  { id: "angles", number: 2, label: "Get Ad Angles", description: "AI finds winning angles" },
+  { id: "angles", number: 2, label: "Get Ad Angles", description: "AI finds high-priority angles" },
   { id: "ads", number: 3, label: "Get Your Ads", description: "Download your ad package" },
 ];
 
@@ -89,6 +89,19 @@ export default async function ResultsPage() {
   }[];
 
   // Generate signed URLs for completed images.
+  // Fetch product input for the launch plan overview.
+  const { data: productInputRow } = await supabase
+    .from("product_inputs")
+    .select("extracted_name, extracted_description, extracted_price, product_context")
+    .eq("session_id", session.id)
+    .maybeSingle();
+
+  const productInput = productInputRow as ProductInput | null;
+  const productName =
+    productInput?.extracted_name ??
+    productInput?.product_context?.name ??
+    "Your Product";
+
   const creatives: CreativeData[] = await Promise.all(
     rawCreatives.map(async (c) => {
       let imageUrl: string | null = null;
@@ -195,152 +208,35 @@ export default async function ResultsPage() {
           </div>
         )}
 
-        {/* 1. Recommended First Test */}
-        {strategy?.recommendedFirstTest && strategy?.campaignStrategy && (
-          <section className="mb-8">
-            <div className="rounded-2xl border border-amber-200 bg-gradient-to-r from-amber-50 to-orange-50 p-6 sm:p-8">
-              <div className="flex items-center gap-2 mb-4">
-                <Trophy className="size-6 text-amber-600" />
-                <h2 className="text-sm font-bold uppercase tracking-wide text-amber-800">
-                  Recommended First Test
-                </h2>
-              </div>
-              <p className="text-xl sm:text-2xl font-bold text-[#0F172A] mb-4">
-                Creative #{strategy.campaignStrategy.recommendedWinner} — {strategy.recommendedFirstTest.creativeName}
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <p className="text-xs font-bold text-amber-700 uppercase tracking-wide mb-1">
-                    Why this should be tested first
-                  </p>
-                  <p className="text-sm text-[#0F172A]">{strategy.recommendedFirstTest.why}</p>
-                </div>
-                <div>
-                  <p className="text-xs font-bold text-amber-700 uppercase tracking-wide mb-1">
-                    Expected outcome
-                  </p>
-                  <p className="text-sm text-[#0F172A]">{strategy.recommendedFirstTest.expectedOutcome}</p>
-                </div>
-                <div>
-                  <p className="text-xs font-bold text-amber-700 uppercase tracking-wide mb-1">
-                    Run on
-                  </p>
-                  <p className="text-sm text-[#0F172A]">{strategy.recommendedFirstTest.runOn}</p>
-                </div>
-              </div>
-
-              {/* KPIs */}
-              <div className="mt-5 rounded-xl border border-amber-200 bg-white/60 p-4">
-                <p className="text-xs font-bold text-amber-700 uppercase tracking-wide mb-3">
-                  Success signals
-                </p>
-                {strategy.successCriteria ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-[10px] font-semibold uppercase tracking-wide text-[#64748B] mb-0.5">Purchases</p>
-                      <p className="text-sm font-bold text-[#0F172A]">At least 1 purchase</p>
-                      <p className="text-[11px] text-[#64748B] mt-0.5">{strategy.successCriteria.purchases.goal}</p>
-                    </div>
-                    <div>
-                      <p className="text-[10px] font-semibold uppercase tracking-wide text-[#64748B] mb-0.5">Target CPA</p>
-                      <p className="text-sm font-bold text-[#0F172A]">
-                        {strategy.targetCpa ? strategy.targetCpa.formatted : "Below target CPA"}
-                      </p>
-                      <p className="text-[11px] text-[#64748B] mt-0.5">
-                        {strategy.targetCpa
-                          ? `Recommended maximum cost per purchase for a $${strategy.targetCpa.sellingPrice} product.`
-                          : "Cost per purchase should stay below the target CPA."}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-[10px] font-semibold uppercase tracking-wide text-[#64748B] mb-0.5">CTR</p>
-                      <p className="text-sm font-bold text-emerald-700">Good: {strategy.successCriteria.ctr.good}</p>
-                      <p className="text-[11px] text-[#64748B] mt-0.5">Average: {strategy.successCriteria.ctr.average} · Poor: {strategy.successCriteria.ctr.poor}</p>
-                    </div>
-                    <div>
-                      <p className="text-[10px] font-semibold uppercase tracking-wide text-[#64748B] mb-0.5">CPC</p>
-                      <p className="text-sm font-bold text-emerald-700">Good: {strategy.successCriteria.cpc.good}</p>
-                      <p className="text-[11px] text-[#64748B] mt-0.5">Average: {strategy.successCriteria.cpc.average} · Poor: {strategy.successCriteria.cpc.poor}</p>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div>
-                      <p className="text-[10px] font-semibold uppercase tracking-wide text-[#64748B] mb-0.5">Primary KPI</p>
-                      <p className="text-sm font-bold text-[#0F172A]">Purchases</p>
-                      <p className="text-[11px] text-[#64748B] mt-0.5">The ultimate goal is identifying which creative drives purchase intent.</p>
-                    </div>
-                    <div>
-                      <p className="text-[10px] font-semibold uppercase tracking-wide text-[#64748B] mb-0.5">Secondary KPI</p>
-                      <p className="text-sm font-bold text-[#0F172A]">Cost Per Purchase</p>
-                      <p className="text-[11px] text-[#64748B] mt-0.5">Lower cost per purchase indicates stronger market resonance.</p>
-                    </div>
-                    <div>
-                      <p className="text-[10px] font-semibold uppercase tracking-wide text-[#64748B] mb-0.5">Supporting KPI</p>
-                      <p className="text-sm font-bold text-[#0F172A]">CTR</p>
-                      <p className="text-[11px] text-[#64748B] mt-0.5">Higher CTR indicates stronger creative engagement.</p>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {strategy.recommendedFirstTest.selectionRationale && strategy.recommendedFirstTest.selectionRationale.length > 0 && (
-                <div className="mt-5">
-                  <p className="text-xs font-bold text-amber-700 uppercase tracking-wide mb-2">
-                    Why this was selected
-                  </p>
-                  <ul className="space-y-2">
-                    {strategy.recommendedFirstTest.selectionRationale.map((item, idx) => (
-                      <li key={idx} className="flex items-start gap-2 text-sm text-[#0F172A]">
-                        <span className="text-emerald-600 font-bold">✓</span>
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {/* What to do next */}
-              <div className="mt-5 rounded-xl border border-emerald-200 bg-emerald-50/60 p-4">
-                <p className="text-xs font-bold text-emerald-700 uppercase tracking-wide mb-3">
-                  What to do next
-                </p>
-                <ol className="space-y-1.5">
-                  {[
-                    "Open Meta Ads Manager.",
-                    "Create one Sales campaign.",
-                    "Create one broad ad set.",
-                    `Upload Creative #${strategy.campaignStrategy.recommendedWinner} (the recommended creative above).`,
-                    "Set your daily budget and run for 3 days.",
-                    "Return to this report and compare results.",
-                  ].map((step, idx) => (
-                    <li key={idx} className="flex items-start gap-2 text-sm text-[#0F172A]">
-                      <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-emerald-600 text-[10px] font-bold text-white mt-0.5">
-                        {idx + 1}
-                      </span>
-                      <span>{step}</span>
-                    </li>
-                  ))}
-                </ol>
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* 2. Customer Insights */}
-        {strategy?.customerInsights && (
+        {/* 1. Campaign Launch Plan */}
+        {strategy?.customerInsights && strategy?.campaignStrategy && (
           <section className="mb-12">
             <div className="rounded-2xl border border-[#E2E8F0] bg-white shadow-xl p-6 sm:p-8">
               <div className="flex items-center gap-2 mb-5">
-                <Target className="size-5 text-indigo-500" />
+                <Rocket className="size-5 text-indigo-500" />
                 <h2
                   className="text-lg sm:text-xl font-bold text-[#0F172A]"
                   style={{ fontFamily: "var(--font-space-grotesk), sans-serif" }}
                 >
-                  Customer Insights
+                  Campaign Launch Plan
                 </h2>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+
+              {/* Product summary */}
+              <div className="mb-6">
+                <p className="text-xs font-bold text-[#64748B] uppercase tracking-wide mb-1">
+                  Product
+                </p>
+                <p className="text-xl sm:text-2xl font-bold text-[#0F172A] mb-1">
+                  {productName}
+                </p>
+                {productInput?.extracted_description && (
+                  <p className="text-sm text-[#64748B]">{productInput.extracted_description}</p>
+                )}
+              </div>
+
+              {/* Customer Insights */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-6">
                 <div>
                   <p className="text-xs font-bold text-[#64748B] uppercase tracking-wide mb-1">
                     Target buyer
@@ -380,21 +276,88 @@ export default async function ResultsPage() {
                   </div>
                 )}
               </div>
+
+              {/* Success Metrics */}
+              {strategy.successCriteria && (
+                <div className="rounded-xl border border-indigo-100 bg-indigo-50/40 p-4 mb-6">
+                  <p className="text-xs font-bold text-indigo-700 uppercase tracking-wide mb-3">
+                    Success Metrics
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-[10px] font-semibold uppercase tracking-wide text-[#64748B] mb-0.5">Purchases</p>
+                      <p className="text-sm font-bold text-[#0F172A]">At least 1 purchase</p>
+                      <p className="text-[11px] text-[#64748B] mt-0.5">{strategy.successCriteria.purchases.goal}</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-semibold uppercase tracking-wide text-[#64748B] mb-0.5">Target CPA</p>
+                      <p className="text-sm font-bold text-[#0F172A]">
+                        {strategy.targetCpa ? strategy.targetCpa.formatted : "Below target CPA"}
+                      </p>
+                      <p className="text-[11px] text-[#64748B] mt-0.5">
+                        {strategy.targetCpa
+                          ? `Recommended maximum cost per purchase for a $${strategy.targetCpa.sellingPrice} product.`
+                          : "Cost per purchase should stay below the target CPA."}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-semibold uppercase tracking-wide text-[#64748B] mb-0.5">CTR</p>
+                      <p className="text-sm font-bold text-emerald-700">Good: {strategy.successCriteria.ctr.good}</p>
+                      <p className="text-[11px] text-[#64748B] mt-0.5">Average: {strategy.successCriteria.ctr.average} · Poor: {strategy.successCriteria.ctr.poor}</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-semibold uppercase tracking-wide text-[#64748B] mb-0.5">CPC</p>
+                      <p className="text-sm font-bold text-emerald-700">Good: {strategy.successCriteria.cpc.good}</p>
+                      <p className="text-[11px] text-[#64748B] mt-0.5">Average: {strategy.successCriteria.cpc.average} · Poor: {strategy.successCriteria.cpc.poor}</p>
+                    </div>
+                    <div className="sm:col-span-2">
+                      <p className="text-[10px] font-semibold uppercase tracking-wide text-[#64748B] mb-0.5">Scale / Pause Decision</p>
+                      <p className="text-sm text-[#0F172A]">
+                        {strategy.successCriteria.decisionRules.condition}. {strategy.successCriteria.decisionRules.action}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* What to do next */}
+              <div className="rounded-xl border border-emerald-200 bg-emerald-50/60 p-4">
+                <p className="text-xs font-bold text-emerald-700 uppercase tracking-wide mb-3">
+                  What to do next
+                </p>
+                <ol className="space-y-1.5">
+                  {[
+                    "Open Meta Ads Manager.",
+                    "Create one Sales campaign.",
+                    "Create one broad ad set.",
+                    "Upload all three creatives (Creative #1, Creative #2, Creative #3).",
+                    "Set your daily budget and run for at least 3 days.",
+                    "Return to this report and compare results.",
+                  ].map((step, idx) => (
+                    <li key={idx} className="flex items-start gap-2 text-sm text-[#0F172A]">
+                      <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-emerald-600 text-[10px] font-bold text-white mt-0.5">
+                        {idx + 1}
+                      </span>
+                      <span>{step}</span>
+                    </li>
+                  ))}
+                </ol>
+              </div>
             </div>
           </section>
         )}
 
-        {/* 3. Ready To Test Creatives */}
+        {/* 2. Generated Creatives */}
         <section className="mb-12">
           <div className="mb-5">
             <h2
               className="text-lg sm:text-xl font-bold text-[#0F172A]"
               style={{ fontFamily: "var(--font-space-grotesk), sans-serif" }}
             >
-              Your First Testing Sprint
+              Generated Creatives
             </h2>
             <p className="text-sm text-[#64748B]">
-              Three creative angles ranked by testing priority.
+              Three creative angles assigned testing roles for your first sprint.
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -409,84 +372,14 @@ export default async function ResultsPage() {
           </div>
         </section>
 
-        {/* 4. Why This Creative Won */}
-        {strategy?.whyWinner && strategy.whyWinner.length > 0 && (
-          <section className="mb-8">
-            <div className="rounded-2xl border border-emerald-200 bg-gradient-to-r from-emerald-50 to-teal-50 p-6 sm:p-8">
-              <div className="flex items-center gap-2 mb-4">
-                <Trophy className="size-6 text-emerald-600" />
-                <h2 className="text-sm font-bold uppercase tracking-wide text-emerald-800">
-                  Why This Creative Won
-                </h2>
-              </div>
-              <p className="text-sm text-emerald-800 mb-4">
-                The winner was selected systematically from a fixed scoring framework — not by AI judgment.
-              </p>
-              <ul className="space-y-2">
-                {strategy.whyWinner.map((item, idx) => (
-                  <li key={idx} className="flex items-start gap-2 text-sm text-[#0F172A]">
-                    <span className="text-emerald-600 font-bold">✓</span>
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </section>
-        )}
-
-        {/* 5. Campaign Launch Plan */}
+        {/* 3. Recommended Testing Setup */}
         {testingPlan && (
           <section className="mb-12">
             <TestingPlanView plan={testingPlan} />
           </section>
         )}
 
-        {/* 6. Creative Ranking Summary */}
-        {strategy?.creativeStrategies && strategy.creativeStrategies.length > 0 && (
-          <section className="mb-12">
-            <div className="mb-5">
-              <h2
-                className="text-lg sm:text-xl font-bold text-[#0F172A]"
-                style={{ fontFamily: "var(--font-space-grotesk), sans-serif" }}
-              >
-                Creative Ranking Summary
-              </h2>
-              <p className="text-sm text-[#64748B]">
-                A compact view of each angle, psychology, and testing priority.
-              </p>
-            </div>
-            <CreativeRankingTable strategies={strategy.creativeStrategies} />
-          </section>
-        )}
-
-        {/* 7. Why This Was Not Chosen First */}
-        {strategy?.whyNotOthers && strategy.whyNotOthers.length > 0 && (
-          <section className="mb-12">
-            <div className="rounded-2xl border border-[#E2E8F0] bg-white shadow-xl p-6 sm:p-8">
-              <h2
-                className="text-lg sm:text-xl font-bold text-[#0F172A] mb-1"
-                style={{ fontFamily: "var(--font-space-grotesk), sans-serif" }}
-              >
-                Why This Was Not Chosen First
-              </h2>
-              <p className="text-sm text-[#64748B] mb-5">
-                These creatives still belong in your testing sprint, but are recommended later.
-              </p>
-              <div className="space-y-3">
-                {strategy.whyNotOthers.map((item) => (
-                  <div key={item.creativeIndex} className="rounded-xl border border-[#E2E8F0] p-4">
-                    <p className="text-sm font-bold text-[#0F172A]">
-                      Creative #{item.creativeIndex}
-                    </p>
-                    <p className="text-sm text-[#64748B] mt-1">{item.reason}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* 8. How to Use This Campaign Launch Plan */}
+        {/* 4. How To Execute */}
         {strategy?.workflow && strategy?.campaignStrategy && (
           <section className="mb-12">
             <div className="rounded-2xl border border-[#E2E8F0] bg-white shadow-xl p-6 sm:p-8">
@@ -496,7 +389,7 @@ export default async function ResultsPage() {
                   className="text-lg sm:text-xl font-bold text-[#0F172A]"
                   style={{ fontFamily: "var(--font-space-grotesk), sans-serif" }}
                 >
-                  How to Use This Campaign Launch Plan
+                  How To Execute
                 </h2>
               </div>
               <div className="space-y-3">
@@ -517,15 +410,15 @@ export default async function ResultsPage() {
                 <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 flex items-start gap-3">
                   <CheckCircle2 className="size-5 text-emerald-600 shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-sm font-bold text-emerald-800">If Creative #{strategy.campaignStrategy.recommendedWinner} wins</p>
-                    <p className="text-sm text-emerald-700 mt-0.5">{strategy.workflow.ifWinner}</p>
+                    <p className="text-sm font-bold text-emerald-800">If one creative outperforms</p>
+                    <p className="text-sm text-emerald-700 mt-0.5">{strategy.workflow.ifPerforms}</p>
                   </div>
                 </div>
                 <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 flex items-start gap-3">
                   <span className="text-lg shrink-0 mt-0.5">→</span>
                   <div>
-                    <p className="text-sm font-bold text-amber-800">If Creative #{strategy.campaignStrategy.recommendedWinner} loses</p>
-                    <p className="text-sm text-amber-700 mt-0.5">{strategy.workflow.ifLoser}</p>
+                    <p className="text-sm font-bold text-amber-800">If all creatives underperform</p>
+                    <p className="text-sm text-amber-700 mt-0.5">{strategy.workflow.ifUnderperforms}</p>
                   </div>
                 </div>
                 <div className="rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-4 flex items-start gap-3">
@@ -540,7 +433,7 @@ export default async function ResultsPage() {
           </section>
         )}
 
-        {/* 9. Disclaimer */}
+        {/* 5. Disclaimer */}
         {strategy?.disclaimer && (
           <section className="mb-12">
             <div className="rounded-2xl border border-[#E2E8F0] bg-white p-6 sm:p-8">

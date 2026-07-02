@@ -748,7 +748,7 @@ export default function Home() {
                 { icon: Sparkles, title: "High-converting hooks & copy", desc: "Primary text, headlines, and openers that drive action." },
                 { icon: ImageIcon, title: "AI-generated ad creatives", desc: "Image and video concepts built around your best angles." },
                 { icon: Download, title: "Ready-to-use ad pack", desc: "Download everything, formatted for Meta Ads." },
-                { icon: LineChart, title: "Testing recommendations", desc: "Know which angles to test first and how to scale winners." },
+                { icon: LineChart, title: "Testing recommendations", desc: "Know which angles to test first and how to scale based on data." },
                 { icon: Lightbulb, title: "Decision-making support", desc: "Get a clear strategy, not just a list of ideas." },
               ].map(({ icon: Icon, title, desc }) => (
                 <div key={title} className="flex flex-col gap-3 sm:gap-4 rounded-2xl border border-[#E2E8F0] bg-white p-5 sm:p-6 shadow-sm transition-all hover:shadow-md hover:-translate-y-px">
@@ -771,7 +771,7 @@ export default function Home() {
               <div className="flex-1">
                 <h3 className="font-bold text-[#0F172A] mb-1" style={H}>Know what to test first</h3>
                 <p className="text-sm sm:text-base text-[#64748B] leading-relaxed">
-                  Start with these 2 angles first. Test for 3 days. Scale the winners.
+                  Start by testing all generated creatives together. Test for 3 days. Scale the strongest performer.
                   AngleCraft gives you a clear plan — not just a list of ideas.
                 </p>
               </div>

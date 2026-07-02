@@ -26,7 +26,7 @@ export function CreativeRankingTable({ strategies }: CreativeRankingTableProps) 
                 Use Case
               </th>
               <th className="px-4 py-3 text-[10px] font-semibold uppercase tracking-wide text-[#64748B] text-right">
-                Priority
+                Testing Priority
               </th>
             </tr>
           </thead>
@@ -55,6 +55,9 @@ export function CreativeRankingTable({ strategies }: CreativeRankingTableProps) 
           </tbody>
         </table>
       </div>
+      <p className="px-4 py-3 text-[11px] text-[#64748B] border-t border-[#E2E8F0] bg-slate-50/50">
+        Priority indicates recommended testing order, not predicted performance.
+      </p>
     </div>
   );
 }

@@ -80,6 +80,13 @@ export interface AdAngle {
   session_id: string;
   angle_label: AngleLabel;
   hook: string;
+  angle_name: string;
+  buyer_emotion: string;
+  purchase_motivation: string;
+  psychological_trigger: string;
+  problem_solved: string;
+  ideal_audience: string;
+  use_case: string;
   rationale: string | null;
   score: number | null;
   is_selected: boolean;
@@ -111,7 +118,6 @@ export interface TestingPlan {
 }
 
 export interface CampaignStrategy {
-  recommendedWinner: number;
   creativePriorities: number[];
   primaryPlatform: string;
   primaryPlacement: string;
@@ -127,32 +133,6 @@ export interface CustomerInsightsData {
   mainBuyingTrigger: string;
   mainObjection: string;
   mostImportantBuyerEmotion: string;
-}
-
-export interface RecommendedFirstTest {
-  creativeIndex: number;
-  creativeName: string;
-  why: string;
-  expectedOutcome: string;
-  selectionRationale: string[];
-  runOn: string;
-}
-
-export interface ActionPlan {
-  platform: string;
-  campaignType: string;
-  audienceStrategy: string;
-  audienceExplanation: string;
-  optimizationGoal: string;
-  optimizationReason: string;
-  firstCreative: string;
-  budget: string;
-  run: string;
-  monitor: string[];
-  decision: string;
-  // Legacy fields kept optional for backward compatibility with older plans.
-  campaign?: string;
-  adSet?: string;
 }
 
 export interface CreativeStrategy {
@@ -194,41 +174,24 @@ export interface TargetCpa {
   formatted: string;
 }
 
-export interface TestingPhasePlan {
-  phase1: {
-    create: string[];
-    upload: string;
-    run: string;
-    evaluate: string[];
-    decision: string;
+export interface RecommendedTestingSetup {
+  approach: string;
+  campaignObjective: string;
+  creatives: number[];
+  budget: {
+    minimum: string;
+    recommended: string;
   };
-  phase2: {
-    pause: string;
-    upload: string;
-    run: string;
-    evaluate: string;
-  };
-  phase3: {
-    condition: string;
-    upload: string;
-    run: string;
-  };
-}
-
-export interface WhyNotOther {
-  creativeIndex: number;
-  reason: string;
-}
-
-export interface WhyWinner {
-  reasons: string[];
+  runTime: string;
+  monitor: string[];
+  afterTesting: string[];
 }
 
 export interface WorkflowGuidance {
   day1: string;
   day4: string;
-  ifWinner: string;
-  ifLoser: string;
+  ifPerforms: string;
+  ifUnderperforms: string;
   ifNone: string;
 }
 
@@ -236,15 +199,11 @@ export interface TestingPlanContent {
   platforms?: string[];
   campaignStrategy: CampaignStrategy;
   customerInsights: CustomerInsightsData;
-  recommendedFirstTest: RecommendedFirstTest;
-  actionPlan: ActionPlan;
   creativeStrategies: CreativeStrategy[];
   testingIntensity: TestingIntensity;
-  testingPlan: TestingPhasePlan;
+  recommendedTestingSetup: RecommendedTestingSetup;
   successCriteria?: SuccessCriteria;
   targetCpa?: TargetCpa;
-  whyNotOthers: WhyNotOther[];
-  whyWinner: string[];
   workflow: WorkflowGuidance;
   disclaimer: string;
   // Legacy fields kept for backward compatibility with previously generated plans.
@@ -327,8 +286,15 @@ export interface AnalyzeProductResult {
 
 export interface GeneratedAngle {
   angleLabel: AngleLabel;
-  hook: string;
+  angleName: string;
+  buyerEmotion: string;
+  purchaseMotivation: string;
+  psychologicalTrigger: string;
+  problemSolved: string;
+  idealAudience: string;
+  useCase: string;
   rationale: string;
+  exampleHook: string;
   criteria: {
     purchaseIntent: number;
     audienceReach: number;
@@ -400,8 +366,15 @@ export interface AnglesResponse {
   angles: {
     id: string;
     angleLabel: AngleLabel;
-    hook: string;
+    angleName: string;
+    buyerEmotion: string;
+    purchaseMotivation: string;
+    psychologicalTrigger: string;
+    problemSolved: string;
+    idealAudience: string;
+    useCase: string;
     rationale: string;
+    exampleHook: string;
     score: number;
     isSelected: boolean;
   }[];

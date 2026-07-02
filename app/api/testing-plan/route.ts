@@ -81,18 +81,14 @@ export async function POST() {
   if (existingPlan) {
     const plan = existingPlan as TestingPlan;
     const content = plan.plan_content as unknown as Record<string, unknown>;
-    const actionPlan = content?.actionPlan as Record<string, unknown> | undefined;
     const hasNewShape =
       content &&
       typeof content.campaignStrategy === "object" &&
-      typeof content.testingPlan === "object" &&
+      typeof content.recommendedTestingSetup === "object" &&
       content.campaignStrategy !== null &&
-      content.testingPlan !== null &&
-      Array.isArray(content.whyWinner) &&
-      actionPlan &&
-      typeof actionPlan.campaignType === "string" &&
-      typeof actionPlan.audienceStrategy === "string" &&
-      typeof actionPlan.optimizationGoal === "string" &&
+      content.recommendedTestingSetup !== null &&
+      Array.isArray(content.creativeStrategies) &&
+      content.creativeStrategies.length === 3 &&
       content.successCriteria &&
       typeof content.successCriteria === "object" &&
       content.targetCpa &&

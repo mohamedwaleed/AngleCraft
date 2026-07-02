@@ -20,7 +20,14 @@ interface BuyerInsightsData {
 interface AngleItem {
   id: string;
   angleLabel: AngleLabel;
-  hook: string;
+  angleName: string;
+  buyerEmotion: string;
+  purchaseMotivation: string;
+  psychologicalTrigger: string;
+  problemSolved: string;
+  idealAudience: string;
+  useCase: string;
+  exampleHook: string;
   rationale: string;
   score: number;
   isSelected: boolean;
@@ -28,7 +35,7 @@ interface AngleItem {
 
 const STEPS: Step[] = [
   { id: "submit", number: 1, label: "Submit Product", description: "Enter your product URL" },
-  { id: "angles", number: 2, label: "Get Ad Angles", description: "AI finds winning angles" },
+  { id: "angles", number: 2, label: "Get Ad Angles", description: "AI finds high-priority angles" },
   { id: "ads", number: 3, label: "Get Your Ads", description: "Download your ad package" },
 ];
 
@@ -78,7 +85,14 @@ export default async function PreviewPage() {
   const angles: AngleItem[] = (anglesRows ?? []).map((a) => ({
     id: (a as { id: string }).id,
     angleLabel: (a as { angle_label: AngleLabel }).angle_label,
-    hook: (a as { hook: string }).hook,
+    angleName: (a as { angle_name: string }).angle_name,
+    buyerEmotion: (a as { buyer_emotion: string }).buyer_emotion,
+    purchaseMotivation: (a as { purchase_motivation: string }).purchase_motivation,
+    psychologicalTrigger: (a as { psychological_trigger: string }).psychological_trigger,
+    problemSolved: (a as { problem_solved: string }).problem_solved,
+    idealAudience: (a as { ideal_audience: string }).ideal_audience,
+    useCase: (a as { use_case: string }).use_case,
+    exampleHook: (a as { hook: string }).hook,
     rationale: (a as { rationale: string | null }).rationale ?? "",
     score: (a as { score: number | null }).score ?? 0,
     isSelected: (a as { is_selected: boolean }).is_selected,
@@ -123,11 +137,11 @@ export default async function PreviewPage() {
                 className="text-lg font-bold text-[#0F172A] mb-1"
                 style={{ fontFamily: "var(--font-space-grotesk), sans-serif" }}
               >
-                Five ad angles with hooks
+                Five ad angles with buyer psychology
               </h2>
               <p className="text-sm text-[#64748B]">
-                Your five labeled ad angles — each with a strong hook — will appear
-                here once generation finishes.
+                Your five highest-priority ad angles — each with a buyer-psychology
+                framework — will appear here once generation finishes.
               </p>
             </div>
           )}

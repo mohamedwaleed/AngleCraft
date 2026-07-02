@@ -35,7 +35,7 @@ const PRE_PAYMENT_STEPS: PipelineStep[] = [
 
 const STEPS: Step[] = [
   { id: "submit", number: 1, label: "Submit Product", description: "Enter your product URL" },
-  { id: "angles", number: 2, label: "Get Ad Angles", description: "AI finds winning angles" },
+  { id: "angles", number: 2, label: "Get Ad Angles", description: "AI finds high-priority angles" },
   { id: "ads", number: 3, label: "Get Your Ads", description: "Download your ad package" },
 ];
 
@@ -127,7 +127,7 @@ export default async function StatusPage() {
             </h1>
             <p className="text-sm text-[#64748B] mb-6">
               We&apos;re reading your product page, analyzing the buyer psychology,
-              and writing five winning ad angles. This usually takes under two
+              and writing five high-priority ad angles. This usually takes under two
               minutes.
             </p>
             <div className="rounded-2xl border border-[#E2E8F0] bg-white p-5 shadow-sm">

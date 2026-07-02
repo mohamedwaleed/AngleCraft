@@ -203,9 +203,15 @@ export function CreativeCard({ creative, strategy, index }: CreativeCardProps) {
               </div>
               <div>
                 <span className="text-[10px] font-semibold uppercase tracking-wide text-[#94A3B8]">
-                  Testing Priority
+                  Testing Role
                 </span>
-                <p className="text-xs font-medium text-[#0F172A]">#{strategy.testingPriority}</p>
+                <p className="text-xs font-medium text-[#0F172A]">
+                  {strategy.testingPriority === 1
+                    ? "Primary Test Angle"
+                    : strategy.testingPriority === 2
+                      ? "Secondary Test Angle"
+                      : "Exploration Angle"}
+                </p>
               </div>
             </div>
             <div>

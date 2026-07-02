@@ -22,7 +22,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "AngleCraft — AI Ad Angle Generator",
   description:
-    "Turn any product into scroll-stopping ad ideas in seconds. Paste a link or upload an image and get winning ad angles, hooks, and ready-to-use creatives instantly.",
+    "Turn any product into scroll-stopping ad ideas in seconds. Paste a link or upload an image and get high-priority ad angles, hooks, and ready-to-use creatives instantly.",
 };
 
 export default function RootLayout({
